@@ -1,5 +1,5 @@
 // types/database.ts
-import { Database } from "./supabase";
+import type { Database } from "./supabase";
 
 // Extract table types
 export type Tables = Database["public"]["Tables"];

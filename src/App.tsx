@@ -12,6 +12,7 @@ import PublicRoute from "@/features/auth/components/routes/PublicRoute";
 import ProtectedRoute from "@/features/auth/components/routes/ProtectedRoute";
 import LandingPage from "@/pages/LandingPage";
 import DashboardPage from "@/features/dashboard/pages/DashboardPage";
+import { SubjectsPage, SubjectDetailPage } from "@/features/subjects";
 
 // Create a Query Client for React Query
 const queryClient = new QueryClient({
@@ -48,10 +49,8 @@ function App() {
                   path="/study-plan"
                   element={<div className="p-6">Study Plan (Coming Soon)</div>}
                 />
-                <Route
-                  path="/subjects"
-                  element={<div className="p-6">Subjects (Coming Soon)</div>}
-                />
+                <Route path="/subjects" element={<SubjectsPage />} />
+                <Route path="/subjects/:id" element={<SubjectDetailPage />} />
                 <Route
                   path="/upload"
                   element={<div className="p-6">Upload (Coming Soon)</div>}

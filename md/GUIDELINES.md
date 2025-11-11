@@ -18,7 +18,7 @@
 
 ## Data & Networking Principles
 
-- All database calls go into `services` or hooks like `useTodos()`.
+- All database calls go into `services`.
 - Always return typed data using Zod schemas.
 - Always implement loading + empty + error UI states.
 
