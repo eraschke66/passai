@@ -6,9 +6,12 @@ import {
   Upload,
   FileQuestion,
   GraduationCap,
+  LogOut,
 } from "lucide-react";
 import { useState } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "@/features/auth/hooks";
+import { signOut } from "@/features/auth/services";
 
 type NavigationItem = {
   id: string;
@@ -23,7 +26,7 @@ const navigationItems: NavigationItem[] = [
     id: "dashboard",
     label: "Dashboard",
     icon: LayoutDashboard,
-    path: "/",
+    path: "/dashboard",
   },
   {
     id: "study-plan",
@@ -48,14 +51,22 @@ const navigationItems: NavigationItem[] = [
     label: "Quizzes",
     icon: FileQuestion,
     path: "/quizzes",
-    badge: 3,
   },
 ];
 
 export default function DashboardLayout() {
-  const userName = "Jake";
-  const [activeNav, setActiveNav] = useState("dashboard");
+  const { profile } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [activeNav, setActiveNav] = useState(
+    navigationItems.find((item) => location.pathname === item.path)?.id ||
+      "dashboard"
+  );
+
+  const handleLogout = async () => {
+    await signOut();
+    navigate("/login");
+  };
 
   return (
     <div className="min-h-screen bg-linear-to-br from-slate-50 via-blue-50/30 to-indigo-50/40">
@@ -141,6 +152,13 @@ export default function DashboardLayout() {
               <Settings className="w-5 h-5" />
               <span className="text-sm font-semibold">Settings</span>
             </button>
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-600 hover:bg-red-50 transition-all"
+            >
+              <LogOut className="w-5 h-5" />
+              <span className="text-sm font-semibold">Log Out</span>
+            </button>
           </div>
         </aside>
 
@@ -158,7 +176,7 @@ export default function DashboardLayout() {
                 <div>
                   <h1 className="text-base font-bold text-slate-900">PassAI</h1>
                   <p className="text-xs text-slate-500 font-medium">
-                    Hi, {userName}!
+                    Hi, {profile?.first_name || "Student"}!
                   </p>
                 </div>
               </button>
