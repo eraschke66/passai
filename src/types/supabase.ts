@@ -20,6 +20,7 @@ export type Database = {
           email: string;
           first_name: string;
           id: string;
+          user_id: string;
           last_name: string;
           subscription_status: string;
           subscription_tier: string;

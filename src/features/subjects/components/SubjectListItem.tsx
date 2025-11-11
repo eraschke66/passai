@@ -22,7 +22,7 @@ interface SubjectListItemProps {
 // Component
 // =============================================
 
-export function SubjectListItem({
+export default function SubjectListItem({
   subject,
   onEdit,
   onDelete,

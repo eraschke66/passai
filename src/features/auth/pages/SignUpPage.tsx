@@ -3,11 +3,8 @@ import { useNavigate, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Book, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
-import {
-  signUp,
-  signUpSchema,
-  type SignUpInput,
-} from "@/features/auth/services";
+import { signUp } from "@/features/auth/services/authService";
+import { signUpSchema, type SignUpInput } from "../services/schemas";
 
 export default function SignUpPage() {
   const navigate = useNavigate();

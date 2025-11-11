@@ -4,10 +4,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Book, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 import {
-  resetPassword,
   resetPasswordSchema,
   type ResetPasswordInput,
-} from "@/features/auth/services";
+} from "../services/schemas";
+import { resetPassword } from "../services/authService";
 
 export default function ResetPasswordPage() {
   const navigate = useNavigate();

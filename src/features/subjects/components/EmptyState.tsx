@@ -12,7 +12,7 @@ interface EmptyStateProps {
 // Component
 // =============================================
 
-export function EmptyState({ onCreateSubject }: EmptyStateProps) {
+export default function EmptyState({ onCreateSubject }: EmptyStateProps) {
   return (
     <div className="flex items-center justify-center min-h-[500px] p-8">
       <div className="max-w-md text-center">

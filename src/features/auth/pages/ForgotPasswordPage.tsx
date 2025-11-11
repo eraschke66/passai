@@ -9,11 +9,11 @@ import {
   AlertCircle,
   ArrowLeft,
 } from "lucide-react";
+import { forgotPassword } from "../services/authService";
 import {
-  forgotPassword,
   forgotPasswordSchema,
   type ForgotPasswordInput,
-} from "@/features/auth/services";
+} from "../services/schemas";
 
 export default function ForgotPasswordPage() {
   const [isLoading, setIsLoading] = useState(false);

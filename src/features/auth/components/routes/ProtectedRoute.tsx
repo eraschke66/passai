@@ -1,6 +1,6 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { Loader2 } from "lucide-react";
-import { useAuth } from "../../hooks";
+import { useAuth } from "../../hooks/useAuth";
 
 /**
  * Protected Route Component

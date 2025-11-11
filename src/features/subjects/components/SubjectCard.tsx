@@ -178,7 +178,7 @@ function formatTestDate(testDate: string | null): {
 // Component
 // =============================================
 
-export function SubjectCard({
+export default function SubjectCard({
   subject,
   onEdit,
   onDelete,

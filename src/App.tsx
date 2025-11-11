@@ -1,18 +1,17 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { AuthProvider } from "@/features/auth/context";
-import {
-  LoginPage,
-  SignUpPage,
-  ForgotPasswordPage,
-  ResetPasswordPage,
-} from "@/features/auth/pages";
+import AuthProvider from "@/features/auth/context/AuthContext";
+import LoginPage from "@/features/auth/pages/LoginPage";
+import SignUpPage from "@/features/auth/pages/SignUpPage";
+import ForgotPasswordPage from "@/features/auth/pages/ForgotPasswordPage";
+import ResetPasswordPage from "@/features/auth/pages/ResetPasswordPage";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import PublicRoute from "@/features/auth/components/routes/PublicRoute";
 import ProtectedRoute from "@/features/auth/components/routes/ProtectedRoute";
 import LandingPage from "@/pages/LandingPage";
 import DashboardPage from "@/features/dashboard/pages/DashboardPage";
-import { SubjectsPage, SubjectDetailPage } from "@/features/subjects";
+import SubjectsPage from "@/features/subjects/pages/SubjectsPage";
+import SubjectDetailPage from "@/features/subjects/pages/SubjectDetailPage";
 
 // Create a Query Client for React Query
 const queryClient = new QueryClient({

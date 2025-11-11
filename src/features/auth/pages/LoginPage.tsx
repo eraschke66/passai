@@ -3,11 +3,8 @@ import { useNavigate, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Book, Loader2, AlertCircle } from "lucide-react";
-import {
-  signIn,
-  signInSchema,
-  type SignInInput,
-} from "@/features/auth/services";
+import { signIn } from "@/features/auth/services/authService";
+import { signInSchema, type SignInInput } from "../services/schemas";
 
 export default function LoginPage() {
   const navigate = useNavigate();

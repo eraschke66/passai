@@ -18,7 +18,8 @@ import {
   useUpdateSubject,
   useDeleteSubject,
 } from "../hooks/useSubjects";
-import { SubjectForm, DeleteConfirmationModal } from "../components";
+import SubjectForm from "../components/SubjectForm";
+import DeleteConfirmationModal from "../components/DeleteConfirmationModal";
 import {
   calculateDaysUntilTest,
   isTestSoon,

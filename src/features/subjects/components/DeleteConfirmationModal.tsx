@@ -18,7 +18,7 @@ interface DeleteConfirmationModalProps {
 // Component
 // =============================================
 
-export function DeleteConfirmationModal({
+export default function DeleteConfirmationModal({
   subject,
   isOpen,
   onClose,

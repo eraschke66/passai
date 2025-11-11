@@ -1,35 +1,15 @@
-import { createContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import type { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase/client";
 import type { Profile } from "@/types/database";
-
-// =============================================
-// Types
-// =============================================
-
-interface AuthContextType {
-  user: User | null;
-  profile: Profile | null;
-  session: Session | null;
-  isLoading: boolean;
-  isAuthenticated: boolean;
-}
+import { AuthContext } from "../hooks/useAuth";
+import type { AuthContextType } from "../types";
 
 interface AuthProviderProps {
   children: React.ReactNode;
 }
 
-// =============================================
-// Context
-// =============================================
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-// =============================================
-// Provider Component
-// =============================================
-
-export function AuthProvider({ children }: AuthProviderProps) {
+export default function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -41,7 +21,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const { data, error } = await supabase
         .from("profiles")
         .select("*")
-        .eq("id", userId)
+        .eq("user_id", userId)
         .single();
 
       if (error) {
@@ -57,7 +37,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
-  // Initialize auth state
   useEffect(() => {
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -74,12 +53,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
 
       if (session?.user) {
-        await fetchProfile(session.user.id);
+        fetchProfile(session.user.id);
       } else {
         setProfile(null);
       }
@@ -102,6 +81,3 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
-
-// Export context for custom hook
-export { AuthContext };

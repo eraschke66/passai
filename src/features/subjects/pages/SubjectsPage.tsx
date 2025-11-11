@@ -7,14 +7,12 @@ import {
   useUpdateSubject,
   useDeleteSubject,
 } from "../hooks/useSubjects";
-import {
-  SubjectCard,
-  SubjectListItem,
-  EmptyState,
-  SubjectForm,
-  DeleteConfirmationModal,
-  SubjectsToolbar,
-} from "../components";
+import SubjectCard from "../components/SubjectCard";
+import SubjectListItem from "../components/SubjectListItem";
+import EmptyState from "../components/EmptyState";
+import SubjectForm from "../components/SubjectForm";
+import DeleteConfirmationModal from "../components/DeleteConfirmationModal";
+import SubjectsToolbar from "../components/SubjectsToolbar";
 import {
   filterBySearch,
   filterByStatus,

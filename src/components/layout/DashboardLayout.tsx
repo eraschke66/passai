@@ -10,8 +10,8 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
-import { useAuth } from "@/features/auth/hooks";
-import { signOut } from "@/features/auth/services";
+import { useAuth } from "@/features/auth/hooks/useAuth";
+import { signOut } from "@/features/auth/services/authService";
 
 type NavigationItem = {
   id: string;

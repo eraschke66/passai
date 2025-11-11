@@ -1,4 +1,4 @@
-import { useAuth } from "@/features/auth/hooks";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 import { Book, TrendingUp, Target, Clock } from "lucide-react";
 
 export default function DashboardPage() {

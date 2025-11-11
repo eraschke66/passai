@@ -18,7 +18,7 @@ interface SubjectsToolbarProps {
 // Component
 // =============================================
 
-export function SubjectsToolbar({
+export default function SubjectsToolbar({
   searchQuery,
   onSearchChange,
   sortBy,

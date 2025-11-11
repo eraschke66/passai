@@ -33,7 +33,7 @@ interface SubjectFormProps {
 // Component
 // =============================================
 
-export function SubjectForm({
+export default function SubjectForm({
   mode,
   subject,
   onSubmit,
