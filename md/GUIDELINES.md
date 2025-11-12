@@ -56,7 +56,6 @@
 - ✅ **Feature-based structure** - Group by feature, not by type
 - ✅ **Co-location** - Keep related files together
 - ✅ **Clear naming** - Files named after their primary export
-- ✅ **Index exports** - Use barrel exports for clean imports
 
 ### Accessibility
 
@@ -64,6 +63,8 @@
 - ✅ **ARIA labels** - For screen readers
 - ✅ **Keyboard navigation** - All interactive elements accessible via keyboard
 - ✅ **Color contrast** - WCAG AA minimum
+
+We do have ShadCN and tailwindcss. We don't have to re-build components if we don't have to. We can just use from ShadCN. Just let me know which and I will add them using the CLI.
 
 ## Additional Rules
 

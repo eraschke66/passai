@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "@/components/ui/sonner";
 import AuthProvider from "./features/auth/context/AuthProvider";
 import LoginPage from "@/features/auth/pages/LoginPage";
 import SignUpPage from "@/features/auth/pages/SignUpPage";
@@ -12,6 +13,7 @@ import LandingPage from "@/pages/LandingPage";
 import DashboardPage from "@/features/dashboard/pages/DashboardPage";
 import SubjectsPage from "@/features/subjects/pages/SubjectsPage";
 import SubjectDetailPage from "@/features/subjects/pages/SubjectDetailPage";
+import { MaterialUploadPage } from "@/features/upload/pages/MaterialUploadPage";
 
 // Create a Query Client for React Query
 const queryClient = new QueryClient({
@@ -28,6 +30,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <BrowserRouter>
+          <Toaster />
           <Routes>
             {/* Public Routes - redirect to dashboard if authenticated */}
             <Route element={<PublicRoute />}>
@@ -50,10 +53,7 @@ function App() {
                 />
                 <Route path="/subjects" element={<SubjectsPage />} />
                 <Route path="/subjects/:id" element={<SubjectDetailPage />} />
-                <Route
-                  path="/upload"
-                  element={<div className="p-6">Upload (Coming Soon)</div>}
-                />
+                <Route path="/upload" element={<MaterialUploadPage />} />
                 <Route
                   path="/quizzes"
                   element={<div className="p-6">Quizzes (Coming Soon)</div>}
@@ -82,3 +82,6 @@ function App() {
 }
 
 export default App;
+
+// There was supposed to be a dropdown where you can select a subject to upload materials for.
+// The upload page was supposed to be different page and entirely on it's own from the subject page. It was not supposed to expect a subject it in order to work.

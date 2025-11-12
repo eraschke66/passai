@@ -107,12 +107,80 @@ export type Database = {
           }
         ];
       };
+      study_materials: {
+        Row: {
+          id: string;
+          subject_id: string;
+          user_id: string;
+          file_name: string;
+          file_type: string;
+          file_size: number;
+          storage_path: string;
+          thumbnail_url: string | null;
+          text_content: string | null;
+          processing_status: string;
+          error_message: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          subject_id: string;
+          user_id: string;
+          file_name: string;
+          file_type: string;
+          file_size: number;
+          storage_path: string;
+          thumbnail_url?: string | null;
+          text_content?: string | null;
+          processing_status?: string;
+          error_message?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          subject_id?: string;
+          user_id?: string;
+          file_name?: string;
+          file_type?: string;
+          file_size?: number;
+          storage_path?: string;
+          thumbnail_url?: string | null;
+          text_content?: string | null;
+          processing_status?: string;
+          error_message?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "study_materials_subject_id_fkey";
+            columns: ["subject_id"];
+            isOneToOne: false;
+            referencedRelation: "subjects";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "study_materials_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
     };
     Views: {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      get_user_storage_usage: {
+        Args: {
+          user_uuid: string;
+        };
+        Returns: number;
+      };
     };
     Enums: {
       [_ in never]: never;

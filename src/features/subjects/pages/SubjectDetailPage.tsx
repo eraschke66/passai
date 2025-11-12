@@ -322,6 +322,12 @@ export default function SubjectDetailPage() {
                 <FileText className="size-6 text-purple-600" />
                 Study Materials
               </h2>
+              <button
+                onClick={() => navigate(`/upload?subjectId=${subject.id}`)}
+                className="text-sm font-medium text-purple-600 hover:text-purple-700"
+              >
+                View All
+              </button>
             </div>
             <div className="flex min-h-[200px] items-center justify-center">
               <div className="text-center">
@@ -335,7 +341,10 @@ export default function SubjectDetailPage() {
                   Upload study materials like PDFs, notes, and documents to get
                   started
                 </p>
-                <button className="rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-700">
+                <button
+                  onClick={() => navigate(`/upload?subjectId=${subject.id}`)}
+                  className="rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-purple-700"
+                >
                   Upload Materials
                 </button>
               </div>
