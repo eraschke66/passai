@@ -14,6 +14,9 @@ import DashboardPage from "@/features/dashboard/pages/DashboardPage";
 import SubjectsPage from "@/features/subjects/pages/SubjectsPage";
 import SubjectDetailPage from "@/features/subjects/pages/SubjectDetailPage";
 import { MaterialUploadPage } from "@/features/upload/pages/MaterialUploadPage";
+import { QuizzesPage } from "./features/quizzes/pages/QuizzesPage";
+import { QuizDetailPage } from "./features/quizzes/pages/QuizDetailPage";
+import { QuizSessionPage } from "./features/quizzes/pages/QuizSessionPage";
 
 // Create a Query Client for React Query
 const queryClient = new QueryClient({
@@ -45,6 +48,13 @@ function App() {
 
             {/* Protected Routes - require authentication */}
             <Route element={<ProtectedRoute />}>
+              {/* Quiz Session - Full screen, outside DashboardLayout */}
+              <Route
+                path="/quizzes/:id/session"
+                element={<QuizSessionPage />}
+              />
+
+              {/* Routes with DashboardLayout */}
               <Route element={<DashboardLayout />}>
                 <Route path="/dashboard" element={<DashboardPage />} />
                 <Route
@@ -54,10 +64,8 @@ function App() {
                 <Route path="/subjects" element={<SubjectsPage />} />
                 <Route path="/subjects/:id" element={<SubjectDetailPage />} />
                 <Route path="/upload" element={<MaterialUploadPage />} />
-                <Route
-                  path="/quizzes"
-                  element={<div className="p-6">Quizzes (Coming Soon)</div>}
-                />
+                <Route path="/quizzes" element={<QuizzesPage />} />
+                <Route path="/quizzes/:id" element={<QuizDetailPage />} />
                 <Route
                   path="/settings"
                   element={<div className="p-6">Settings (Coming Soon)</div>}
