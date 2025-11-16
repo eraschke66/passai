@@ -3,14 +3,14 @@ import { Sprout, Leaf, ArrowRight } from "lucide-react";
 
 interface GardenTeaserProps {
   pointsEarned: number;
-  newProgress: number;
+  level: number;
   onViewGarden: () => void;
   subject: string;
 }
 
 export const GardenTeaser: React.FC<GardenTeaserProps> = ({
   pointsEarned,
-  newProgress,
+  level,
   onViewGarden,
   subject,
 }) => {
@@ -27,22 +27,9 @@ export const GardenTeaser: React.FC<GardenTeaserProps> = ({
             <span className="font-bold text-white">{pointsEarned} points</span>{" "}
             for your {subject} garden!
           </p>
-        </div>
-      </div>
-      <div className="mb-4">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-semibold text-white/90">
-            Level Progress
-          </span>
-          <span className="text-sm font-bold text-white">
-            {Math.round(newProgress)}%
-          </span>
-        </div>
-        <div className="h-3 bg-white/20 rounded-full overflow-hidden">
-          <div
-            className="h-full bg-white rounded-full transition-all duration-1000 ease-out"
-            style={{ width: `${newProgress}%` }}
-          />
+          <p className="text-white/80 text-xs lg:text-sm mt-1">
+            Level <span className="font-bold">{level}</span>
+          </p>
         </div>
       </div>
       <button

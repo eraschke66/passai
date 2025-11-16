@@ -1,15 +1,18 @@
 import React, { useState } from "react";
-import { Clock, Home, RotateCcw, Target, Trophy } from "lucide-react";
+import { Clock, Home, RotateCcw, Target } from "lucide-react";
 import { GardenProgress } from "../garden/GardenProgress"; // Assume refactored
 import type { QuestionResult, Question } from "../../types/quiz";
 import { ScoreCard } from "./ScoreCard";
 import { QuickStatsGrid } from "./QuickStatsGrid";
 import { GardenTeaser } from "./GardenTeaser";
 import { QuestionReviewList } from "../quizsession/QuestionReviewList";
+import { useGardenUpdate } from "../../hooks/useGardenUpdate";
+import { calculateProgressToNextLevel } from "../../services/plantStateService";
 
 interface QuizResultsPageProps {
   quizTitle: string;
   subject: string;
+  subjectId: string; // Add subjectId to props
   subjectColor: string;
   results: QuestionResult[];
   questions: Question[];
@@ -30,30 +33,43 @@ export const QuizResultsPage: React.FC<QuizResultsPageProps> = (props) => {
   const totalTimeSpent = props.results.reduce((acc, r) => acc + r.timeSpent, 0);
   const averageTimePerQuestion = Math.round(totalTimeSpent / totalQuestions);
 
-  const pointsEarned = correctAnswers * 10 + Math.floor(score / 10) * 5;
-  // const previousLevel = 3; // Mock
-  const previousProgress = 65; // Mock
-  const newProgress = Math.min(previousProgress + pointsEarned / 10, 100);
+  // Update garden state after quiz completion
+  const {
+    plantState,
+    pointsEarned,
+    isLoading: gardenLoading,
+    gardenEmoticon,
+  } = useGardenUpdate({
+    subjectId: props.subjectId,
+    quizScore: score,
+    totalQuestions,
+    enabled: true,
+  });
+
+  // Calculate progress to next level (0-100)
+  const progressToNextLevel = plantState
+    ? calculateProgressToNextLevel(plantState.points)
+    : 0;
 
   const getScoreMessage = () => {
     if (score >= 90)
       return {
-        title: "Outstanding! 🌟",
-        message: "You've mastered this material!",
+        title: "Outstanding! �",
+        message: "Your garden is thriving! You've mastered this material!",
       };
     if (score >= 75)
       return {
-        title: "Great Job! 💪",
-        message: "You're well on your way to mastery!",
+        title: "Great Job! 🌻",
+        message: "Your garden is blooming! Keep up the great work!",
       };
     if (score >= 60)
       return {
-        title: "Good Effort! 👍",
-        message: "Keep practicing to improve!",
+        title: "Good Effort! 🌿",
+        message: "Your garden is growing! Keep practicing to improve!",
       };
     return {
-      title: "Keep Going! 🚀",
-      message: "Review the material and try again!",
+      title: "Keep Going! 🌱",
+      message: "Every seed starts small! Review and nurture your knowledge!",
     };
   };
 
@@ -72,7 +88,10 @@ export const QuizResultsPage: React.FC<QuizResultsPageProps> = (props) => {
       >
         <div className="max-w-4xl mx-auto text-center">
           <div className="w-20 h-20 lg:w-24 lg:h-24 bg-white/20 backdrop-blur-sm rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-            <Trophy className="w-10 h-10 lg:w-12 lg:h-12 text-white" />
+            {/* Show garden emoticon instead of trophy */}
+            <span className="text-5xl" role="img" aria-label="garden status">
+              {gardenEmoticon}
+            </span>
           </div>
           <h1 className="text-3xl lg:text-4xl font-bold text-white mb-2">
             Quiz Complete!
@@ -133,12 +152,15 @@ export const QuizResultsPage: React.FC<QuizResultsPageProps> = (props) => {
             </p>
           </div>
         </div>
-        <GardenTeaser
-          pointsEarned={pointsEarned}
-          newProgress={newProgress}
-          onViewGarden={() => setShowGarden(true)}
-          subject={props.subject}
-        />
+        {/* Show garden teaser only if plant state loaded */}
+        {plantState && !gardenLoading && (
+          <GardenTeaser
+            pointsEarned={pointsEarned}
+            level={plantState.level}
+            onViewGarden={() => setShowGarden(true)}
+            subject={props.subject}
+          />
+        )}
         <QuestionReviewList
           results={props.results}
           questions={props.questions}
@@ -163,14 +185,14 @@ export const QuizResultsPage: React.FC<QuizResultsPageProps> = (props) => {
           </button>
         </div>
       </div>
-      {showGarden && (
+      {showGarden && plantState && (
         <GardenProgress
           subject={props.subject}
           subjectColor={props.subjectColor}
-          level={3}
-          progress={newProgress}
+          level={plantState.level}
+          progress={progressToNextLevel}
           pointsEarned={pointsEarned}
-          plantHealth={85}
+          plantHealth={plantState.health}
           onClose={() => setShowGarden(false)}
         />
       )}

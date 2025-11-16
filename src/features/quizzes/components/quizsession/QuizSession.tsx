@@ -18,6 +18,7 @@ import { FeedbackSection } from "./FeedbackSection";
 import { SourceModal } from "./SourceModal";
 import { useSaveUserAnswer } from "../../hooks/useSaveUserAnswer";
 import { useCompleteQuizAttempt } from "../../hooks/useCompleteQuizAttempt";
+import { useLogStudySession } from "../../hooks/useLogStudySession";
 import {
   isAnswerCorrect,
   getCorrectAnswerText,
@@ -27,6 +28,7 @@ interface QuizSessionProps {
   quizId: string;
   quizTitle: string;
   subject: string;
+  subjectId: string; // Add subjectId for garden system
   subjectColor: string;
   totalQuestions: number;
   attemptId?: string; // Optional - if provided, will resume that attempt
@@ -39,6 +41,7 @@ export const QuizSession: React.FC<QuizSessionProps> = (props) => {
   const { data: questions = [], isLoading, error } = useQuestions(props.quizId);
   const { mutate: saveAnswer } = useSaveUserAnswer();
   const { mutate: completeAttempt } = useCompleteQuizAttempt();
+  const { mutate: logStudySession } = useLogStudySession();
 
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(
     props.initialQuestionIndex || 0
@@ -187,7 +190,23 @@ export const QuizSession: React.FC<QuizSessionProps> = (props) => {
             mood: userMood,
           },
           {
-            onSuccess: () => setIsQuizComplete(true),
+            onSuccess: () => {
+              // Log study session for garden health calculation and streak tracking
+              logStudySession({
+                subjectId: props.subjectId,
+                durationMinutes: Math.ceil(totalTimeSpent / 60), // Convert seconds to minutes
+                mood: userMood as
+                  | "confident"
+                  | "okay"
+                  | "struggling"
+                  | "confused"
+                  | undefined,
+                // TODO: Extract topics from quiz questions when topic tagging is implemented
+                // TODO: Track quiz_id reference when we add quiz_attempt_id to study_sessions
+              });
+
+              setIsQuizComplete(true);
+            },
           }
         );
       } else {
@@ -265,6 +284,7 @@ export const QuizSession: React.FC<QuizSessionProps> = (props) => {
       <QuizResultsPage
         quizTitle={props.quizTitle}
         subject={props.subject}
+        subjectId={props.subjectId}
         subjectColor={props.subjectColor}
         results={results}
         questions={questions}

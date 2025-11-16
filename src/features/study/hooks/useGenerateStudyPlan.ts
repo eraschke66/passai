@@ -47,7 +47,7 @@ export const useGenerateStudyPlan = () => {
         queryKey: ["studyPlans", variables.subjectId],
       });
 
-      toast.success("Study plan generated successfully!", {
+      toast.success("Study plan generated successfully! 🪴", {
         description: "Your personalized study plan is ready to view.",
         duration: 5000,
       });

@@ -151,6 +151,7 @@ export const QuizSessionPage = () => {
       quizId={quiz.id}
       quizTitle={quiz.title}
       subject={quiz.subject}
+      subjectId={quiz.subject_id}
       subjectColor={quiz.subject_color}
       totalQuestions={quiz.questions_count}
       attemptId={resumeData?.attemptId}

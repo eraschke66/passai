@@ -141,7 +141,7 @@ export function useSubjectAnalytics(subjectId: string | undefined) {
         progress: {
           materialCoverage: 0, // TODO: Implement when material service is ready
           averageMastery,
-          totalStudyHours: 0, // TODO: Implement with study sessions service
+          totalStudyHours: 0, // TODO: Calculate from study_sessions table (sum duration_minutes / 60)
           completionRate: 0, // TODO: Implement with task completion tracking
         },
         activePlan,

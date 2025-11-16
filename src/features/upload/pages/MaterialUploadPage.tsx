@@ -156,7 +156,7 @@ export function MaterialUploadPage() {
         materialId: material.id,
         storagePath: material.storage_path,
       });
-      toast.success("Material deleted", {
+      toast.success("Material deleted 🗑️", {
         description: material.file_name,
       });
       // Note: deleteMutation already invalidates queries, but we refetch to be sure

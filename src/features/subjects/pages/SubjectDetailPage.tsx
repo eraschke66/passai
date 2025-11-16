@@ -28,6 +28,8 @@ import {
   getSubjectColorClasses,
 } from "../utils";
 import type { Subject, UpdateSubjectInput } from "../types/subject.types";
+import { useSubjectGardenHealth } from "../../quizzes/hooks/useSubjectGardenHealth";
+import { SubjectGardenCard } from "../../quizzes/components/garden/SubjectGardenCard";
 
 type ModalState =
   | { type: "closed" }
@@ -41,6 +43,17 @@ export default function SubjectDetailPage() {
 
   // Queries
   const { data: subject, isLoading, isError, error } = useSubject(id);
+
+  // Garden Health
+  const {
+    health,
+    level,
+    points,
+    pointsToNextLevel,
+    emoticon,
+    statusLabel,
+    isLoading: gardenLoading,
+  } = useSubjectGardenHealth(id);
 
   // Mutations
   const updateMutation = useUpdateSubject();
@@ -298,19 +311,16 @@ export default function SubjectDetailPage() {
             </p>
           </div>
 
-          {/* Materials Count (Placeholder) */}
-          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-            <div className="mb-3 flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-600">
-                Study Materials
-              </span>
-              <FileText className="size-5 text-purple-600" />
-            </div>
-            <div className="mb-2 text-3xl font-bold text-gray-900">0</div>
-            <p className="text-xs text-gray-500">
-              Upload materials to get started
-            </p>
-          </div>
+          {/* Garden Health */}
+          <SubjectGardenCard
+            health={health}
+            level={level}
+            points={points}
+            pointsToNextLevel={pointsToNextLevel}
+            emoticon={emoticon}
+            statusLabel={statusLabel}
+            isLoading={gardenLoading}
+          />
         </div>
 
         {/* Content Grid */}

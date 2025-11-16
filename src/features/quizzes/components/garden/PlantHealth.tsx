@@ -14,12 +14,11 @@ export const PlantHealth: React.FC<PlantHealthProps> = ({ plantHealth }) => {
   };
 
   const getHealthMessage = () => {
-    if (plantHealth >= 80) return "Thriving! Keep up the consistent study! 🌟";
+    if (plantHealth >= 80) return "Thriving! Keep up the consistent study! �";
     if (plantHealth >= 60)
-      return "Healthy! Study regularly to maintain growth! 💪";
-    if (plantHealth >= 40)
-      return "Needs attention. Try to study more often! 💧";
-    return "Wilting! Your garden needs regular care! 🌱";
+      return "Blooming! Study regularly to maintain growth! 🌻";
+    if (plantHealth >= 40) return "Growing! Try to study more often! 🌿";
+    return "Needs tending! Your garden needs regular care! 💧";
   };
 
   return (

@@ -32,7 +32,7 @@ export const LevelProgress: React.FC<LevelProgressProps> = ({
         </div>
         {leveledUp && (
           <div className="px-4 py-2 bg-linear-to-r from-amber-500 to-orange-600 text-white rounded-xl font-bold text-sm shadow-lg animate-bounce">
-            Level Up! 🎉
+            Level Up! �
           </div>
         )}
       </div>
@@ -56,7 +56,7 @@ export const LevelProgress: React.FC<LevelProgressProps> = ({
       </div>
       <p className="text-xs text-slate-600">
         {leveledUp
-          ? "🎊 Congratulations! You've reached the next level!"
+          ? "� Congratulations! Your garden has grown to the next level!"
           : `${100 - Math.round(displayProgress)}% until next level`}
       </p>
     </div>

@@ -101,7 +101,7 @@ export function UploadModal({
 
     if (result.successCount > 0) {
       setStagedFiles([]);
-      toast.success("Upload successful", {
+      toast.success("Material uploaded! 🎃", {
         description: `${result.successCount} ${
           result.successCount === 1 ? "file" : "files"
         } uploaded successfully`,

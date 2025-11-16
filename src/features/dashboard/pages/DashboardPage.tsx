@@ -1,8 +1,16 @@
 import { useAuth } from "@/features/auth/hooks/useAuth";
-import { Book, TrendingUp, Target, Clock } from "lucide-react";
+import { Book, TrendingUp, Target } from "lucide-react";
+import { useOverallGardenHealth } from "@/features/quizzes/hooks/useOverallGardenHealth";
+import { GardenHealthCard } from "@/features/quizzes/components/garden/GardenHealthCard";
 
 export default function DashboardPage() {
   const { profile } = useAuth();
+  const {
+    health,
+    emoticon,
+    statusLabel,
+    isLoading: gardenLoading,
+  } = useOverallGardenHealth();
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
@@ -30,19 +38,13 @@ export default function DashboardPage() {
           <p className="text-sm text-slate-600">Active subjects</p>
         </div>
 
-        {/* Quizzes Taken */}
-        <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 border border-slate-200/60 shadow-lg">
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 rounded-xl bg-indigo-100 flex items-center justify-center">
-              <TrendingUp className="w-6 h-6 text-indigo-600" />
-            </div>
-            <span className="text-xs font-semibold text-slate-500 uppercase">
-              Progress
-            </span>
-          </div>
-          <p className="text-3xl font-bold text-slate-900 mb-1">0</p>
-          <p className="text-sm text-slate-600">Quizzes completed</p>
-        </div>
+        {/* Garden Health */}
+        <GardenHealthCard
+          health={health}
+          emoticon={emoticon}
+          statusLabel={statusLabel}
+          isLoading={gardenLoading}
+        />
 
         {/* Average Score */}
         <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 border border-slate-200/60 shadow-lg">
@@ -58,18 +60,18 @@ export default function DashboardPage() {
           <p className="text-sm text-slate-600">Average score</p>
         </div>
 
-        {/* Study Streak */}
+        {/* Quizzes Taken */}
         <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 border border-slate-200/60 shadow-lg">
           <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 rounded-xl bg-pink-100 flex items-center justify-center">
-              <Clock className="w-6 h-6 text-pink-600" />
+            <div className="w-12 h-12 rounded-xl bg-indigo-100 flex items-center justify-center">
+              <TrendingUp className="w-6 h-6 text-indigo-600" />
             </div>
             <span className="text-xs font-semibold text-slate-500 uppercase">
-              Streak
+              Progress
             </span>
           </div>
           <p className="text-3xl font-bold text-slate-900 mb-1">0</p>
-          <p className="text-sm text-slate-600">Day streak</p>
+          <p className="text-sm text-slate-600">Quizzes completed</p>
         </div>
       </div>
 

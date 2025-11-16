@@ -26,7 +26,7 @@ export const ScheduleOptions: React.FC<ScheduleOptionsProps> = ({
           <CheckCircle2 className="w-8 h-8 text-white" />
         </div>
         <h3 className="text-xl lg:text-2xl font-bold text-slate-900 mb-2">
-          Quiz Generated Successfully! 🎉
+          Quiz Generated Successfully! �
         </h3>
         <p className="text-slate-600">
           Your personalized {selectedSubject?.name} quiz with{" "}

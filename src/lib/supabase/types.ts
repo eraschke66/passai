@@ -68,6 +68,50 @@ export type Database = {
           },
         ]
       }
+      plant_states: {
+        Row: {
+          created_at: string
+          health: number
+          id: string
+          last_tended_at: string | null
+          level: number
+          points: number
+          subject_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          health?: number
+          id?: string
+          last_tended_at?: string | null
+          level?: number
+          points?: number
+          subject_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          health?: number
+          id?: string
+          last_tended_at?: string | null
+          level?: number
+          points?: number
+          subject_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plant_states_subject_id_fkey"
+            columns: ["subject_id"]
+            isOneToOne: false
+            referencedRelation: "subjects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -603,6 +647,7 @@ export type Database = {
           created_at: string
           description: string | null
           estimated_duration: number
+          estimated_time_minutes: number | null
           id: string
           is_completed: boolean
           order_index: number
@@ -619,6 +664,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           estimated_duration?: number
+          estimated_time_minutes?: number | null
           id?: string
           is_completed?: boolean
           order_index?: number
@@ -635,6 +681,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           estimated_duration?: number
+          estimated_time_minutes?: number | null
           id?: string
           is_completed?: boolean
           order_index?: number
@@ -666,10 +713,12 @@ export type Database = {
           focus_areas: string[] | null
           id: string
           order_index: number
+          priority: string | null
           status: string
           studyy_plan_id: string
           title: string
           total_tasks: number
+          total_time_minutes: number | null
           updated_at: string
         }
         Insert: {
@@ -681,10 +730,12 @@ export type Database = {
           focus_areas?: string[] | null
           id?: string
           order_index?: number
+          priority?: string | null
           status?: string
           studyy_plan_id: string
           title: string
           total_tasks?: number
+          total_time_minutes?: number | null
           updated_at?: string
         }
         Update: {
@@ -696,10 +747,12 @@ export type Database = {
           focus_areas?: string[] | null
           id?: string
           order_index?: number
+          priority?: string | null
           status?: string
           studyy_plan_id?: string
           title?: string
           total_tasks?: number
+          total_time_minutes?: number | null
           updated_at?: string
         }
         Relationships: [

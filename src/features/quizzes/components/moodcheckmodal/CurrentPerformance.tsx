@@ -9,9 +9,9 @@ export const CurrentPerformance: React.FC<CurrentPerformanceProps> = ({
   currentScore,
 }) => {
   const getScoreMessage = () => {
-    if (currentScore >= 80) return "You're doing great! 🌟";
-    if (currentScore >= 60) return "Good progress so far! 💪";
-    return "Keep going, you've got this! 🚀";
+    if (currentScore >= 80) return "Your garden is thriving! �";
+    if (currentScore >= 60) return "Your garden is growing strong! 🌿";
+    return "Keep nurturing your knowledge! 🌱";
   };
 
   return (
