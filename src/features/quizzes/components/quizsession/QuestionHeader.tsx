@@ -11,8 +11,8 @@ interface QuestionHeaderProps {
 }
 
 export const QuestionHeader: React.FC<QuestionHeaderProps> = ({
-  currentQuestionIndex,
-  totalQuestions,
+  // currentQuestionIndex,
+  // totalQuestions,
   currentQuestion,
   hasSubmitted,
   handleQuestionFeedback,

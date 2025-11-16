@@ -18,7 +18,7 @@ interface QuizResultsPageProps {
 
 export const QuizResultsPage: React.FC<QuizResultsPageProps> = (props) => {
   const [showGarden, setShowGarden] = useState(false);
-  const [showDetailedReview, setShowDetailedReview] = useState(false);
+  // const [showDetailedReview, setShowDetailedReview] = useState(false);
 
   const totalQuestions = props.results.length;
   const correctAnswers = props.results.filter((r) => r.isCorrect).length;
@@ -31,7 +31,7 @@ export const QuizResultsPage: React.FC<QuizResultsPageProps> = (props) => {
   const averageTimePerQuestion = Math.round(totalTimeSpent / totalQuestions);
 
   const pointsEarned = correctAnswers * 10 + Math.floor(score / 10) * 5;
-  const previousLevel = 3; // Mock
+  // const previousLevel = 3; // Mock
   const previousProgress = 65; // Mock
   const newProgress = Math.min(previousProgress + pointsEarned / 10, 100);
 
@@ -142,7 +142,7 @@ export const QuizResultsPage: React.FC<QuizResultsPageProps> = (props) => {
         <QuestionReviewList
           results={props.results}
           questions={props.questions}
-          onDetailedReview={() => setShowDetailedReview(true)}
+          // onDetailedReview={() => setShowDetailedReview(true)}
         />
         <div className="grid grid-cols-2 gap-4">
           <button

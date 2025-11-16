@@ -1,10 +1,14 @@
 import React from "react";
-import type { Quiz, QuizQuestion, QuizAttempt } from "../../types/quiz";
+import type {
+  QuizQuestion,
+  QuizAttempt,
+  QuizWithSubject,
+} from "../../types/quiz";
 import { SummaryStats } from "./SummaryStats";
 import { QuestionsReview } from "./QuestionsReview";
 
 interface AttemptDetailModalProps {
-  quiz: Quiz;
+  quiz: QuizWithSubject;
   attempt: QuizAttempt;
   onClose: () => void;
   questions: QuizQuestion[];
@@ -27,15 +31,15 @@ export const AttemptDetailModal: React.FC<AttemptDetailModalProps> = ({
       >
         {/* Modal Header */}
         <div
-          className={`shrink-0 px-6 py-5 border-b border-slate-200 bg-linear-to-br ${quiz.subjectColor}`}
+          className={`shrink-0 px-6 py-5 border-b border-slate-200 bg-${quiz.subject_color}-600`}
         >
           <div className="w-12 h-1 bg-white/30 rounded-full mx-auto mb-4 md:hidden"></div>
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-xl lg:text-2xl font-bold text-white mb-1">
-                Attempt #{attempt.attemptNumber}
+                Attempt #{attempt.attempt_number}
               </h2>
-              <p className="text-white/90 text-sm">{attempt.completedDate}</p>
+              <p className="text-white/90 text-sm">{attempt.completed_date}</p>
             </div>
             <div className="text-right">
               <p className="text-xs text-white/80 font-medium mb-1">Score</p>

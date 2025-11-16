@@ -72,6 +72,33 @@ export const getMaterials = async (): Promise<MaterialWithSubject[]> => {
   }));
 };
 
+export const getAttemptQuestions = async (attemptId: string) => {
+  console.log("getAttemptQuestions called - placeholder for ", attemptId);
+  return [];
+};
+
+export const submitQuizAttempt = (
+  quizId: string,
+  results: QuestionResult[],
+  score: number
+): Promise<unknown> => {
+  // Implementation to submit quiz attempt
+  console.log("submitQuizAttempt called - placeholder", {
+    quizId,
+    results,
+    score,
+  });
+  return Promise.resolve({});
+};
+
+export const updateQuizAttempt = (
+  attemptId: string,
+  updates: Partial<QuizAttempt>
+) => {
+  console.log("updateQuizAttempt called - placeholder", { attemptId, updates });
+  return Promise.resolve({} as QuizAttempt);
+};
+
 // Get the questions for a given quiz
 export const getQuestions = async (quizId: string): Promise<Question[]> => {
   console.log("📥 getQuestions called with quizId:", quizId);

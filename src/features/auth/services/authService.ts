@@ -8,7 +8,7 @@ import type {
   ChangePasswordInput,
 } from "./schemas";
 import type { AuthResponse } from "../types";
-import type { Profile } from "@/types/database";
+import type { Profile } from "../types";
 
 // =============================================
 // Error Handler

@@ -11,13 +11,13 @@ import type { QuestionResult, Question } from "../../types/quiz";
 interface QuestionReviewListProps {
   results: QuestionResult[];
   questions: Question[];
-  onDetailedReview: () => void;
+  // onDetailedReview: () => void;
 }
 
 export const QuestionReviewList: React.FC<QuestionReviewListProps> = ({
   results,
   questions,
-  onDetailedReview,
+  // onDetailedReview,
 }) => {
   return (
     <div className="bg-white rounded-2xl border-2 border-slate-200 p-5 lg:p-6 shadow-sm">
@@ -71,7 +71,7 @@ export const QuestionReviewList: React.FC<QuestionReviewListProps> = ({
         })}
       </div>
       <button
-        onClick={onDetailedReview}
+        // onClick={onDetailedReview}
         className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-blue-50 hover:bg-blue-100 text-blue-600 font-semibold rounded-xl transition-colors border-2 border-blue-200"
       >
         <span>View Detailed Review</span>

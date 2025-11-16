@@ -1,5 +1,5 @@
+import type { Database } from "@/lib/supabase/types";
 import type { User, Session } from "@supabase/supabase-js";
-import type { Profile } from "@/types/database";
 
 export interface AuthResponse {
   success: boolean;
@@ -17,6 +17,8 @@ export interface AuthResponse {
 //   subscription_tier: "free" | "premium";
 //   subscription_status: "active" | "inactive" | "cancelled";
 // }
+
+export type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 
 export interface AuthContextType {
   user: User | null;

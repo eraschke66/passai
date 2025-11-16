@@ -124,7 +124,7 @@ export const ScoreProgressionChart: React.FC<ScoreProgressionChartProps> = ({
                       stroke="rgb(59, 130, 246)"
                       strokeWidth="3"
                     />
-                    <title>{`Attempt ${a.attemptNumber}: ${a.score}%`}</title>
+                    <title>{`Attempt ${a.attempt_number}: ${a.score}%`}</title>
                   </g>
                 ))}
             </>
@@ -135,7 +135,7 @@ export const ScoreProgressionChart: React.FC<ScoreProgressionChartProps> = ({
             .slice()
             .reverse()
             .map((a, i) => (
-              <span key={i}>#{a.attemptNumber}</span>
+              <span key={i}>#{a.attempt_number}</span>
             ))}
         </div>
       </div>
