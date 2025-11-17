@@ -13,7 +13,11 @@ import type {
   SubjectIcon,
   SubjectColor,
 } from "@/features/subjects/types";
-import { EXAM_BOARDS, getRandomPreset } from "@/features/subjects/types";
+import {
+  EXAM_BOARDS,
+  QUESTION_STYLES,
+  getRandomPreset,
+} from "@/features/subjects/types";
 
 // =============================================
 // Types
@@ -66,8 +70,12 @@ export default function SubjectForm({
             test_date: subject.test_date || "",
             exam_board: subject.exam_board || "",
             teacher_emphasis: subject.teacher_emphasis || "",
+            question_style: subject.question_style || "multiple_choice",
+            grading_rubric: subject.grading_rubric || "",
           }
-        : undefined,
+        : {
+            question_style: "multiple_choice",
+          },
   });
 
   const handleFormSubmit = async (data: FieldValues) => {
@@ -84,6 +92,9 @@ export default function SubjectForm({
       test_date: data.test_date || null,
       exam_board: data.exam_board || null,
       teacher_emphasis: data.teacher_emphasis || null,
+      grading_rubric: data.grading_rubric || null,
+      // Ensure question_style has a value
+      question_style: data.question_style || "multiple_choice",
     };
 
     const result = await onSubmit(submissionData);
@@ -212,6 +223,16 @@ export default function SubjectForm({
           )}
         </div>
 
+        {/* Section Divider */}
+        <div className="pt-6 border-t border-slate-200">
+          <h3 className="text-lg font-bold text-slate-900 mb-1">
+            📚 Curriculum Customization
+          </h3>
+          <p className="text-sm text-slate-500 mb-6">
+            Help us generate questions that match your actual exam
+          </p>
+        </div>
+
         {/* Exam Board */}
         <div>
           <label
@@ -267,7 +288,7 @@ export default function SubjectForm({
                 ? "border-red-300 focus:border-red-500 focus:ring-red-500/20"
                 : "border-slate-200 focus:border-blue-500 focus:ring-blue-500/20"
             } focus:outline-none focus:ring-4 transition-all resize-none`}
-            placeholder="e.g., Focus on practical applications and lab work"
+            placeholder="e.g., Focus on essay structure and thesis statements"
             disabled={isSubmitting || isLoading}
           />
           {errors.teacher_emphasis && (
@@ -275,6 +296,77 @@ export default function SubjectForm({
               {errors.teacher_emphasis.message}
             </p>
           )}
+        </div>
+
+        {/* Question Style */}
+        <div>
+          <label
+            htmlFor="question_style"
+            className="block text-sm font-semibold text-slate-700 mb-2"
+          >
+            Question Format{" "}
+            <span className="text-slate-400 text-xs font-normal">
+              (how you'll be tested)
+            </span>
+          </label>
+          <select
+            id="question_style"
+            {...register("question_style")}
+            className={`w-full px-4 py-3 rounded-xl border ${
+              errors.question_style
+                ? "border-red-300 focus:border-red-500 focus:ring-red-500/20"
+                : "border-slate-200 focus:border-blue-500 focus:ring-blue-500/20"
+            } focus:outline-none focus:ring-4 transition-all`}
+            disabled={isSubmitting || isLoading}
+          >
+            {QUESTION_STYLES.map((style) => (
+              <option key={style.value} value={style.value}>
+                {style.label} - {style.description}
+              </option>
+            ))}
+          </select>
+          {errors.question_style && (
+            <p className="mt-1.5 text-xs text-red-600">
+              {errors.question_style.message}
+            </p>
+          )}
+          <p className="mt-1.5 text-xs text-slate-500">
+            💡 This helps generate questions that match your actual exam format
+          </p>
+        </div>
+
+        {/* Grading Rubric */}
+        <div>
+          <label
+            htmlFor="grading_rubric"
+            className="block text-sm font-semibold text-slate-700 mb-2"
+          >
+            Grading Rubric{" "}
+            <span className="text-slate-400 text-xs font-normal">
+              (optional)
+            </span>
+          </label>
+          <textarea
+            id="grading_rubric"
+            {...register("grading_rubric")}
+            rows={3}
+            className={`w-full px-4 py-3 rounded-xl border ${
+              errors.grading_rubric
+                ? "border-red-300 focus:border-red-500 focus:ring-red-500/20"
+                : "border-slate-200 focus:border-blue-500 focus:ring-blue-500/20"
+            } focus:outline-none focus:ring-4 transition-all resize-none`}
+            placeholder="e.g., 'Looks for specific vocabulary and clear explanations' or 'Wants step-by-step work shown' or 'Emphasizes thesis + 3 supporting points'"
+            disabled={isSubmitting || isLoading}
+          />
+          {errors.grading_rubric && (
+            <p className="mt-1.5 text-xs text-red-600">
+              {errors.grading_rubric.message}
+            </p>
+          )}
+          <p className="mt-1.5 text-xs text-slate-500">
+            📝 This helps generate answers that match your teacher's
+            expectations
+          </p>
         </div>
 
         {/* Action Buttons */}

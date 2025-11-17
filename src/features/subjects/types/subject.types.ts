@@ -12,6 +12,8 @@ export interface Subject {
   test_date: string | null; // ISO date string
   exam_board: string | null;
   teacher_emphasis: string | null;
+  question_style: QuestionStyle; // Format of questions to generate
+  grading_rubric: string | null; // How the teacher grades
   icon: SubjectIcon;
   color: SubjectColor;
   progress: number; // 0-100
@@ -28,6 +30,24 @@ export interface Subject {
 export type SubjectIcon = (typeof SUBJECT_ICONS)[number];
 export type SubjectColor = (typeof SUBJECT_COLORS)[number];
 
+// Question styles for quiz generation (Teacher Layer)
+export type QuestionStyle =
+  | "multiple_choice"
+  | "short_answer"
+  | "essay"
+  | "mixed";
+
+// Exam boards supported for curriculum alignment
+export type ExamBoard =
+  | "IB"
+  | "AP"
+  | "A-Level"
+  | "GCSE"
+  | "IGCSE"
+  | "SAT"
+  | "Other"
+  | null;
+
 // For creating a new subject (user doesn't provide all fields)
 export interface CreateSubjectInput {
   name: string;
@@ -35,6 +55,8 @@ export interface CreateSubjectInput {
   test_date?: string | null;
   exam_board?: string | null;
   teacher_emphasis?: string | null;
+  question_style?: QuestionStyle;
+  grading_rubric?: string | null;
   icon?: SubjectIcon;
   color?: SubjectColor;
 }
@@ -46,6 +68,8 @@ export interface UpdateSubjectInput {
   test_date?: string | null;
   exam_board?: string | null;
   teacher_emphasis?: string | null;
+  question_style?: QuestionStyle;
+  grading_rubric?: string | null;
   icon?: SubjectIcon;
   color?: SubjectColor;
   progress?: number;

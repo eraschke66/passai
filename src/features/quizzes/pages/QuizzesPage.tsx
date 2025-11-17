@@ -27,9 +27,7 @@ export const QuizzesPage = () => {
   };
   const subjects = [allSubject, ...rawSubjects];
 
-  const [filterStatus, setFilterStatus] = useState<
-    "all" | "completed" | "in-progress" | "not-started"
-  >("all");
+  const [filterStatus, setFilterStatus] = useState<"all" | "completed">("all");
   const [selectedSubject, setSelectedSubject] = useState<Subject>(subjects[0]);
   const [isSubjectDropdownOpen, setIsSubjectDropdownOpen] = useState(false);
   const [showCreateQuiz, setShowCreateQuiz] = useState(false);

@@ -5,9 +5,7 @@ import type { Subject } from "../../types/quiz";
 interface NoQuizzesFoundProps {
   selectedSubject: Subject;
   subjects: Subject[];
-  setFilterStatus: (
-    status: "all" | "completed" | "in-progress" | "not-started"
-  ) => void;
+  setFilterStatus: (status: "all" | "completed") => void;
   setSelectedSubject: (subject: Subject) => void;
 }
 

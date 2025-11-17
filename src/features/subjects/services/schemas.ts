@@ -67,6 +67,21 @@ export const createSubjectSchema = z.object({
     .nullable()
     .optional(),
 
+  question_style: z
+    .enum(["multiple_choice", "short_answer", "essay", "mixed"])
+    .default("multiple_choice")
+    .optional(),
+
+  grading_rubric: z
+    .string()
+    .max(
+      SUBJECT_LIMITS.GRADING_RUBRIC_MAX_LENGTH,
+      `Grading rubric must be less than ${SUBJECT_LIMITS.GRADING_RUBRIC_MAX_LENGTH} characters`
+    )
+    .trim()
+    .nullable()
+    .optional(),
+
   icon: z.enum(SUBJECT_ICONS as unknown as [string, ...string[]]).optional(),
 
   color: z.enum(SUBJECT_COLORS as unknown as [string, ...string[]]).optional(),
@@ -128,6 +143,20 @@ export const updateSubjectSchema = z
       .max(
         SUBJECT_LIMITS.TEACHER_EMPHASIS_MAX_LENGTH,
         `Teacher emphasis must be less than ${SUBJECT_LIMITS.TEACHER_EMPHASIS_MAX_LENGTH} characters`
+      )
+      .trim()
+      .nullable()
+      .optional(),
+
+    question_style: z
+      .enum(["multiple_choice", "short_answer", "essay", "mixed"])
+      .optional(),
+
+    grading_rubric: z
+      .string()
+      .max(
+        SUBJECT_LIMITS.GRADING_RUBRIC_MAX_LENGTH,
+        `Grading rubric must be less than ${SUBJECT_LIMITS.GRADING_RUBRIC_MAX_LENGTH} characters`
       )
       .trim()
       .nullable()

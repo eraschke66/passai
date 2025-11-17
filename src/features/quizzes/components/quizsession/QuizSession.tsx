@@ -22,7 +22,10 @@ import { useLogStudySession } from "../../hooks/useLogStudySession";
 import {
   isAnswerCorrect,
   getCorrectAnswerText,
+  validateAnswer,
+  requiresAIGrading,
 } from "../../utils/answerValidation";
+import type { GradingResult } from "../../services/aiGradingService";
 
 interface QuizSessionProps {
   quizId: string;
@@ -58,6 +61,10 @@ export const QuizSession: React.FC<QuizSessionProps> = (props) => {
   const [moodCheckCompleted, setMoodCheckCompleted] = useState(false);
   const [userMood, setUserMood] = useState<string | null>(null);
   const [isQuizComplete, setIsQuizComplete] = useState(false);
+  const [isGrading, setIsGrading] = useState(false);
+  const [gradingResult, setGradingResult] = useState<GradingResult | undefined>(
+    undefined
+  );
 
   // Safe access to currentQuestion with null check
   const currentQuestion = questions[currentQuestionIndex];
@@ -136,32 +143,103 @@ export const QuizSession: React.FC<QuizSessionProps> = (props) => {
     if (isMidpoint) setShowMoodCheck(true);
   }, [currentQuestionIndex, results.length, isMidpoint]);
 
-  const handleSubmitAnswer = () => {
+  const handleSubmitAnswer = async () => {
     const timeSpent = Math.floor((Date.now() - questionStartTime) / 1000);
-    const isCorrect = isAnswerCorrect(currentQuestion, selectedAnswer);
     const correctAnswerText = getCorrectAnswerText(currentQuestion);
 
-    const result: QuestionResult = {
-      questionId: currentQuestion.id,
-      userAnswer: selectedAnswer,
-      correctAnswer: correctAnswerText,
-      isCorrect,
-      timeSpent,
-      wasAnswered: true,
-    };
-    setResults((prev) => [...prev, result]);
-    setHasSubmitted(true);
+    // Check if this question needs AI grading
+    const needsAI = requiresAIGrading(currentQuestion.type);
 
-    // Save progress to database if we have an attemptId
-    if (props.attemptId) {
-      saveAnswer({
-        attemptId: props.attemptId,
+    if (needsAI) {
+      // Show grading spinner
+      setIsGrading(true);
+      setHasSubmitted(true); // Disable further input
+
+      try {
+        // Call AI grading service
+        const validationResult = await validateAnswer(
+          currentQuestion,
+          selectedAnswer
+        );
+
+        setIsGrading(false);
+        setGradingResult(validationResult.gradingResult);
+
+        const result: QuestionResult = {
+          questionId: currentQuestion.id,
+          userAnswer: selectedAnswer,
+          correctAnswer: correctAnswerText,
+          isCorrect: validationResult.isCorrect,
+          timeSpent,
+          wasAnswered: true,
+        };
+        setResults((prev) => [...prev, result]);
+
+        // Save to database with AI grading result
+        if (props.attemptId) {
+          saveAnswer({
+            attemptId: props.attemptId,
+            questionId: currentQuestion.id,
+            userAnswer: selectedAnswer,
+            isCorrect: validationResult.isCorrect,
+            timeSpent,
+            currentQuestionIndex: currentQuestionIndex + 1,
+          });
+        }
+      } catch (error) {
+        console.error("AI grading failed:", error);
+        setIsGrading(false);
+
+        // Fallback: mark as incorrect if grading fails
+        const result: QuestionResult = {
+          questionId: currentQuestion.id,
+          userAnswer: selectedAnswer,
+          correctAnswer: correctAnswerText,
+          isCorrect: false,
+          timeSpent,
+          wasAnswered: true,
+        };
+        setResults((prev) => [...prev, result]);
+        setHasSubmitted(true);
+
+        // Still save to database
+        if (props.attemptId) {
+          saveAnswer({
+            attemptId: props.attemptId,
+            questionId: currentQuestion.id,
+            userAnswer: selectedAnswer,
+            isCorrect: false,
+            timeSpent,
+            currentQuestionIndex: currentQuestionIndex + 1,
+          });
+        }
+      }
+    } else {
+      // Instant validation for MC/TF
+      const isCorrect = isAnswerCorrect(currentQuestion, selectedAnswer);
+
+      const result: QuestionResult = {
         questionId: currentQuestion.id,
         userAnswer: selectedAnswer,
+        correctAnswer: correctAnswerText,
         isCorrect,
         timeSpent,
-        currentQuestionIndex: currentQuestionIndex + 1, // Next question index
-      });
+        wasAnswered: true,
+      };
+      setResults((prev) => [...prev, result]);
+      setHasSubmitted(true);
+
+      // Save progress to database if we have an attemptId
+      if (props.attemptId) {
+        saveAnswer({
+          attemptId: props.attemptId,
+          questionId: currentQuestion.id,
+          userAnswer: selectedAnswer,
+          isCorrect,
+          timeSpent,
+          currentQuestionIndex: currentQuestionIndex + 1,
+        });
+      }
     }
   };
 
@@ -218,6 +296,8 @@ export const QuizSession: React.FC<QuizSessionProps> = (props) => {
       setSelectedAnswer("");
       setHasSubmitted(false);
       setTimeLeft(120);
+      setIsGrading(false); // Reset grading state
+      setGradingResult(undefined); // Clear grading result
     }
   };
 
@@ -348,6 +428,8 @@ export const QuizSession: React.FC<QuizSessionProps> = (props) => {
             hasSubmitted={hasSubmitted}
             results={results}
             currentQuestion={currentQuestion}
+            isGrading={isGrading}
+            gradingResult={gradingResult}
           />
           <button
             onClick={() => setShowSourceModal(true)}
@@ -372,13 +454,13 @@ export const QuizSession: React.FC<QuizSessionProps> = (props) => {
             </div>
           </button>
           <div className="flex gap-3">
-            {!hasSubmitted ? (
+            {!hasSubmitted || isGrading ? (
               <button
                 onClick={handleSubmitAnswer}
-                disabled={!selectedAnswer}
+                disabled={!selectedAnswer || isGrading}
                 className="flex-1 flex items-center justify-center gap-2 px-6 py-3 lg:py-4 bg-linear-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-xl hover:shadow-lg active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
               >
-                <span>Submit Answer</span>
+                <span>{isGrading ? "Grading..." : "Submit Answer"}</span>
                 <ArrowRight className="w-5 h-5" />
               </button>
             ) : (

@@ -8,6 +8,7 @@ import type {
   QuizWithSubject,
   Subject,
 } from "../types/quiz";
+import type { Subject as SubjectType } from "@/features/subjects/types";
 import { generateQuizQuestions } from "../lib/quizGen";
 import {
   updateMasteryFromQuizResults,
@@ -188,6 +189,20 @@ export const createQuizAttempt = async (userId: string, quizId: string) => {
   }
 
   console.log("✅ Quiz attempt created:", attemptData);
+
+  // Update the quiz status to in-progress
+  const { error: updateError } = await supabase
+    .from("quizzes")
+    .update({ status: "in-progress" })
+    .eq("id", quizId);
+
+  if (updateError) {
+    console.error("⚠️ Error updating quiz status:", updateError);
+    // Don't throw - attempt was created successfully
+  } else {
+    console.log("✅ Quiz status updated to in-progress");
+  }
+
   return attemptData;
 };
 
@@ -198,6 +213,21 @@ export const generateAndCreateQuiz = async (
   settings: QuizSettings,
   materialIds: string[]
 ): Promise<{ quizId: string; questions: Question[] }> => {
+  // Fetch subject data for teacher layer customization
+  const { data: subject, error: subjectError } = await supabase
+    .from("subjects")
+    .select("*")
+    .eq("id", subjectId)
+    .eq("user_id", userId)
+    .single();
+
+  if (subjectError) {
+    console.warn(
+      "Could not fetch subject data, generating without teacher layer:",
+      subjectError
+    );
+  }
+
   // Fetch materials' text_content
   const { data: materials, error: matError } = await supabase
     .from("study_materials")
@@ -209,10 +239,11 @@ export const generateAndCreateQuiz = async (
   const combinedText = materials?.map((m) => m.text_content).join("\n\n") || "";
   if (!combinedText) throw new Error("No content available in materials");
 
-  // Generate questions via OpenAI
+  // Generate questions via OpenAI with teacher layer customization
   const generatedQuestions = await generateQuizQuestions(
     combinedText,
-    settings
+    settings,
+    subject as SubjectType | undefined // Pass subject data for curriculum-aligned prompts
   );
 
   // Create quiz
@@ -433,6 +464,18 @@ export const completeQuizAttempt = async (
 ): Promise<void> => {
   console.log("🏁 Completing quiz attempt:", { attemptId, score, mood });
 
+  // First, get the quiz_id from the attempt
+  const { data: attemptData, error: fetchError } = await supabase
+    .from("quiz_attempts")
+    .select("quiz_id")
+    .eq("id", attemptId)
+    .single();
+
+  if (fetchError) {
+    console.error("❌ Error fetching attempt:", fetchError);
+    throw fetchError;
+  }
+
   const { error } = await supabase
     .from("quiz_attempts")
     .update({
@@ -451,6 +494,22 @@ export const completeQuizAttempt = async (
   }
 
   console.log("✅ Quiz attempt completed");
+
+  // Update the quiz status to completed and update score
+  const { error: updateError } = await supabase
+    .from("quizzes")
+    .update({
+      status: "completed",
+      score: score,
+    })
+    .eq("id", attemptData.quiz_id);
+
+  if (updateError) {
+    console.error("⚠️ Error updating quiz status:", updateError);
+    // Don't throw - attempt was completed successfully
+  } else {
+    console.log("✅ Quiz status updated to completed");
+  }
 
   // Update BKT mastery after quiz completion
   try {

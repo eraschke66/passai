@@ -82,63 +82,47 @@
 
 ---
 
-### 2. Bayesian Knowledge Tracking (BKT) Integration 🟧
+### 2. Bayesian Knowledge Tracking (BKT) Integration ✅
 
-**Status:** Algorithm implemented but not connected to quizzes  
-**Completion:** 50%  
+**Status:** Phase 1 Complete (95%)  
+**Completion:** 95%  
+**Completed:** November 17, 2025  
 **Files Affected:**
 
-- `src/features/study-plan/utils/bkt.ts` ✅
-- `src/features/study-plan/services/mastery.service.ts` ✅
-- `src/features/quizzes/services/quizzesService.ts` ⚠️
-- `supabase/schema_definitions/questions.sql` ⚠️
+- `src/features/study/utils/bkt.ts` ✅
+- `src/features/study/services/mastery.service.ts` ✅
+- `src/features/study/types/analytics.types.ts` ✅
+- `src/features/study/components/PassProbabilityCard.tsx` ✅
+- `src/features/study/components/TopicMasteryCard.tsx` ✅
+- `src/features/study/components/WeakAreasCard.tsx` ✅
+- `src/features/study/hooks/useMastery.ts` ✅
+- `src/features/quizzes/services/quizzesService.ts` ✅
+- `src/features/quizzes/lib/quizGen.ts` ✅
 - `supabase/schema_definitions/topic_mastery.sql` ✅
 
 **What's Done:**
 
-- ✅ BKT algorithm fully implemented
-- ✅ `topic_mastery` table exists
-- ✅ Service functions for updating mastery
-- ✅ BKT test suite
+- ✅ BKT algorithm migrated to study/ folder (active)
+- ✅ Concept field added to quiz generation
+- ✅ Mastery updates after quiz completion
+- ✅ Pass probability calculated from BKT
+- ✅ PassProbabilityCard (Subject Detail + Dashboard)
+- ✅ TopicMasteryCard (detailed breakdown with progress bars)
+- ✅ WeakAreasCard (priority-based weak areas)
+- ✅ Data flow: Quiz → Concept → BKT → Pass Probability → UI
 
-**What's Missing:**
+**Future Enhancements (Backlog):**
 
-- 🟥 Questions don't have `concept` or `skill` field
-- 🟥 Quiz answers not updating topic_mastery
-- 🟥 Pass probability not calculated from BKT
-- 🟥 No skill extraction from uploaded materials
-- 🟥 Pass probability not displayed on UI
+See `completed_md/BKT_FUTURE_ENHANCEMENTS.md` for:
 
-**Implementation Steps:**
+- Historical mastery tracking (graphs over time)
+- Adaptive difficulty (adjust based on mastery)
+- Mastery decay (spaced repetition)
+- Custom BKT parameters per subject
+- Multi-concept questions
+- Bayesian network visualization
 
-1. Add `concept` field to questions table
-
-   ```sql
-   ALTER TABLE questions ADD COLUMN concept TEXT;
-   CREATE INDEX idx_questions_concept ON questions(concept);
-   ```
-
-2. Update quiz generation to tag questions with concepts
-
-   - Modify quiz generation prompt to extract main concept
-   - Store concept when creating questions
-
-3. Update mastery after quiz completion
-
-   - In `submitQuizAttempt`, call `processQuizAttempt` from mastery.service
-   - Update topic_mastery for each concept
-
-4. Calculate pass probability
-
-   - Create service to calculate overall pass chance from topic mastery
-   - Use `calculateAverageMastery` function from bkt.ts
-
-5. Display pass probability on UI
-   - Show on SubjectDetailPage
-   - Show on Dashboard
-   - Update after each quiz
-
-**Estimated Time:** 3-4 days
+**Time Spent:** 3 days
 
 ---
 

@@ -79,6 +79,33 @@ export const EXAM_BOARDS = [
 ] as const;
 
 // =============================================
+// Question Styles (Teacher Layer)
+// =============================================
+
+export const QUESTION_STYLES = [
+  {
+    value: "multiple_choice",
+    label: "Multiple Choice",
+    description: "4-option questions (A, B, C, D)",
+  },
+  {
+    value: "short_answer",
+    label: "Short Answer",
+    description: "Brief written responses (1-3 sentences)",
+  },
+  {
+    value: "essay",
+    label: "Essay/Long Answer",
+    description: "Extended responses (3-5 paragraphs)",
+  },
+  {
+    value: "mixed",
+    label: "Mixed Format",
+    description: "Variety of question types",
+  },
+] as const;
+
+// =============================================
 // Constants
 // =============================================
 
@@ -90,6 +117,7 @@ export const SUBJECT_LIMITS = {
   DESCRIPTION_MAX_LENGTH: 500,
   EXAM_BOARD_MAX_LENGTH: 100,
   TEACHER_EMPHASIS_MAX_LENGTH: 500,
+  GRADING_RUBRIC_MAX_LENGTH: 1000,
 } as const;
 
 export const PROGRESS_THRESHOLDS = {

@@ -1,11 +1,20 @@
 import type { Question } from "../types/quiz";
+import {
+  gradeWithCache,
+  type GradingResult,
+} from "../services/aiGradingService";
+
+export interface ValidationResult {
+  isCorrect: boolean;
+  needsAIGrading: boolean;
+  gradingResult?: GradingResult;
+}
 
 /**
  * Validates if a user's answer is correct based on question type
  *
- * For multiple-choice: correct_answer stores the index (0-based) of the correct option
- * For true-false: correct_answer stores "true" or "false"
- * For short-answer: direct string comparison (case-insensitive)
+ * For multiple-choice & true-false: Instant validation
+ * For short-answer & essay: Returns flag to trigger AI grading
  */
 export const isAnswerCorrect = (
   question: Question,
@@ -74,4 +83,75 @@ export const getCorrectAnswerText = (question: Question): string => {
   }
 
   return correctAnswer;
+};
+
+/**
+ * Enhanced validation that supports AI grading for open-ended questions
+ * Returns validation result with grading status
+ */
+export const validateAnswer = async (
+  question: Question,
+  userAnswer: string,
+  rubric?: string
+): Promise<ValidationResult> => {
+  if (!userAnswer || !question.correct_answer) {
+    return {
+      isCorrect: false,
+      needsAIGrading: false,
+    };
+  }
+
+  const questionType = question.type;
+
+  // Instant validation for MC and TF
+  if (questionType === "multiple-choice" || questionType === "true-false") {
+    return {
+      isCorrect: isAnswerCorrect(question, userAnswer),
+      needsAIGrading: false,
+    };
+  }
+
+  // AI grading for short answer and essay
+  if (questionType === "short-answer" || questionType === "essay") {
+    try {
+      const gradingResult = await gradeWithCache(
+        question.id,
+        questionType === "essay" ? "essay" : "short-answer",
+        question.question,
+        question.correct_answer,
+        userAnswer,
+        rubric,
+        {
+          topic: question.topic || undefined,
+          difficulty: question.difficulty || undefined,
+        }
+      );
+
+      return {
+        isCorrect: gradingResult.isCorrect,
+        needsAIGrading: false, // Already graded
+        gradingResult,
+      };
+    } catch (error) {
+      console.error("AI grading failed:", error);
+      // Fallback: return pending state
+      return {
+        isCorrect: false,
+        needsAIGrading: true, // Needs retry
+      };
+    }
+  }
+
+  // Default fallback
+  return {
+    isCorrect: isAnswerCorrect(question, userAnswer),
+    needsAIGrading: false,
+  };
+};
+
+/**
+ * Check if a question type requires AI grading
+ */
+export const requiresAIGrading = (questionType: string): boolean => {
+  return questionType === "short-answer" || questionType === "essay";
 };

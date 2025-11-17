@@ -1,6 +1,7 @@
 import React from "react";
 import { CheckCircle2, XCircle } from "lucide-react";
 import type { Question } from "../../types/quiz";
+import { TextAnswerInput } from "./TextAnswerInput";
 
 interface AnswerOptionsProps {
   currentQuestion: Question;
@@ -15,6 +16,22 @@ export const AnswerOptions: React.FC<AnswerOptionsProps> = ({
   hasSubmitted,
   setSelectedAnswer,
 }) => {
+  // For short answer and essay questions, show text input
+  if (
+    currentQuestion.type === "short-answer" ||
+    currentQuestion.type === "essay"
+  ) {
+    return (
+      <TextAnswerInput
+        questionType={currentQuestion.type}
+        value={selectedAnswer}
+        onChange={setSelectedAnswer}
+        disabled={hasSubmitted}
+      />
+    );
+  }
+
+  // For multiple choice and true-false, show options
   return (
     <div className="space-y-3 mb-6">
       {currentQuestion.options?.map((option, idx) => {

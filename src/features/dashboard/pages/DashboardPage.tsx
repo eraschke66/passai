@@ -1,14 +1,15 @@
 import { useAuth } from "@/features/auth/hooks/useAuth";
-import { Book, TrendingUp, Target } from "lucide-react";
+import { Book, Target } from "lucide-react";
 import { useOverallGardenHealth } from "@/features/quizzes/hooks/useOverallGardenHealth";
 import { GardenHealthCard } from "@/features/quizzes/components/garden/GardenHealthCard";
 import { useSubjects } from "@/features/subjects/hooks/useSubjects";
-import { PassProbabilityCard } from "@/features/study/components/PassProbabilityCard";
-import { useNavigate } from "react-router-dom";
+import { SubjectsCarousel } from "../components/SubjectsCarousel";
+import { UpcomingTasks } from "../components/UpcomingTasks";
+import { QuizCallToAction } from "../components/QuizCallToAction";
+import { QuickInsights } from "../components/QuickInsights";
 
 export default function DashboardPage() {
   const { profile } = useAuth();
-  const navigate = useNavigate();
   const {
     health,
     emoticon,
@@ -28,19 +29,7 @@ export default function DashboardPage() {
         )
       : 0;
 
-  // Get subjects sorted by pass chance (highest first)
-  const topPerformingSubjects =
-    subjects
-      ?.filter((s) => (s.pass_chance || 0) > 0)
-      .sort((a, b) => (b.pass_chance || 0) - (a.pass_chance || 0))
-      .slice(0, 3) || [];
-
-  // Get subjects that need work (lowest pass chance)
-  const needsWorkSubjects =
-    subjects
-      ?.filter((s) => (s.pass_chance || 0) > 0 && (s.pass_chance || 0) < 70)
-      .sort((a, b) => (a.pass_chance || 0) - (b.pass_chance || 0))
-      .slice(0, 3) || [];
+  const hasSubjects = subjects && subjects.length > 0;
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
@@ -49,133 +38,74 @@ export default function DashboardPage() {
         <h1 className="text-3xl font-bold text-slate-900 mb-2">
           Welcome back, {profile?.first_name || "Student"}! 👋
         </h1>
-        <p className="text-slate-600">Here's your study overview for today</p>
+        <p className="text-slate-600">
+          {hasSubjects
+            ? "Here's your study overview for today"
+            : "Let's get started with your learning journey"}
+        </p>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {/* Total Subjects */}
-        <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 border border-slate-200/60 shadow-lg">
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center">
-              <Book className="w-6 h-6 text-blue-600" />
+      {/* Stats Grid - Only show if user has subjects */}
+      {hasSubjects && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          {/* Total Subjects */}
+          <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 border border-slate-200/60 shadow-lg">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center">
+                <Book className="w-6 h-6 text-blue-600" />
+              </div>
+              <span className="text-xs font-semibold text-slate-500 uppercase">
+                Subjects
+              </span>
             </div>
-            <span className="text-xs font-semibold text-slate-500 uppercase">
-              Subjects
-            </span>
+            <p className="text-3xl font-bold text-slate-900 mb-1">
+              {totalSubjects}
+            </p>
+            <p className="text-sm text-slate-600">Active subjects</p>
           </div>
-          <p className="text-3xl font-bold text-slate-900 mb-1">
-            {totalSubjects}
-          </p>
-          <p className="text-sm text-slate-600">Active subjects</p>
-        </div>
 
-        {/* Garden Health */}
-        <GardenHealthCard
-          health={health}
-          emoticon={emoticon}
-          statusLabel={statusLabel}
-          isLoading={gardenLoading}
-        />
+          {/* Garden Health */}
+          <GardenHealthCard
+            health={health}
+            emoticon={emoticon}
+            statusLabel={statusLabel}
+            isLoading={gardenLoading}
+          />
 
-        {/* Average Pass Chance */}
-        <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 border border-slate-200/60 shadow-lg">
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 rounded-xl bg-violet-100 flex items-center justify-center">
-              <Target className="w-6 h-6 text-violet-600" />
+          {/* Average Pass Chance */}
+          <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 border border-slate-200/60 shadow-lg">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-12 h-12 rounded-xl bg-violet-100 flex items-center justify-center">
+                <Target className="w-6 h-6 text-violet-600" />
+              </div>
+              <span className="text-xs font-semibold text-slate-500 uppercase">
+                Average Pass
+              </span>
             </div>
-            <span className="text-xs font-semibold text-slate-500 uppercase">
-              Average Pass
-            </span>
+            <p className="text-3xl font-bold text-slate-900 mb-1">
+              {averagePassChance}%
+            </p>
+            <p className="text-sm text-slate-600">Across all subjects</p>
           </div>
-          <p className="text-3xl font-bold text-slate-900 mb-1">
-            {averagePassChance}%
-          </p>
-          <p className="text-sm text-slate-600">Across all subjects</p>
-        </div>
-
-        {/* Quizzes Taken */}
-        <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 border border-slate-200/60 shadow-lg">
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 rounded-xl bg-indigo-100 flex items-center justify-center">
-              <TrendingUp className="w-6 h-6 text-indigo-600" />
-            </div>
-            <span className="text-xs font-semibold text-slate-500 uppercase">
-              Progress
-            </span>
-          </div>
-          <p className="text-3xl font-bold text-slate-900 mb-1">0</p>
-          <p className="text-sm text-slate-600">Quizzes completed</p>
-        </div>
-      </div>
-
-      {/* Pass Probability Section */}
-      {subjects && subjects.length > 0 && (
-        <div className="mb-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Top Performing Subjects */}
-          {topPerformingSubjects.length > 0 && (
-            <div className="space-y-4">
-              <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-green-600" />
-                Top Performing Subjects
-              </h2>
-              {topPerformingSubjects.map((subject) => (
-                <div
-                  key={subject.id}
-                  className="cursor-pointer"
-                  onClick={() => navigate(`/subjects/${subject.id}`)}
-                >
-                  <PassProbabilityCard
-                    passChance={subject.pass_chance}
-                    subjectName={subject.name}
-                  />
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Needs Work Subjects */}
-          {needsWorkSubjects.length > 0 && (
-            <div className="space-y-4">
-              <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                <Target className="w-5 h-5 text-orange-600" />
-                Needs Your Attention
-              </h2>
-              {needsWorkSubjects.map((subject) => (
-                <div
-                  key={subject.id}
-                  className="cursor-pointer"
-                  onClick={() => navigate(`/subjects/${subject.id}`)}
-                >
-                  <PassProbabilityCard
-                    passChance={subject.pass_chance}
-                    subjectName={subject.name}
-                  />
-                </div>
-              ))}
-            </div>
-          )}
         </div>
       )}
 
-      {/* Empty State */}
-      {subjects && subjects.length === 0 && (
-        <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-12 border border-slate-200/60 shadow-lg text-center">
-          <div className="max-w-md mx-auto">
-            <div className="w-20 h-20 rounded-full bg-linear-to-br from-blue-600 via-indigo-600 to-violet-600 flex items-center justify-center mx-auto mb-6 shadow-lg shadow-blue-500/20">
-              <Book className="w-10 h-10 text-white" />
-            </div>
-            <h2 className="text-2xl font-bold text-slate-900 mb-3">
-              Ready to start studying?
-            </h2>
-            <p className="text-slate-600 mb-6">
-              Create your first subject to begin generating quizzes and tracking
-              your progress.
-            </p>
-            <button className="px-6 py-3 bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/30 transition-all">
-              Create Your First Subject
-            </button>
-          </div>
+      {/* Subjects Carousel */}
+      <div className="mb-8">
+        <SubjectsCarousel />
+      </div>
+
+      {/* Upcoming Tasks & Quiz CTA */}
+      {hasSubjects && (
+        <div className="space-y-8">
+          {/* Quick Insights */}
+          <QuickInsights subjects={subjects} />
+
+          {/* Study Plan Tasks */}
+          <UpcomingTasks />
+
+          {/* Quiz Call to Action */}
+          <QuizCallToAction />
         </div>
       )}
     </div>
