@@ -7,6 +7,7 @@ import { SubjectsCarousel } from "../components/SubjectsCarousel";
 import { UpcomingTasks } from "../components/UpcomingTasks";
 import { QuizCallToAction } from "../components/QuizCallToAction";
 import { QuickInsights } from "../components/QuickInsights";
+import { OnboardingFlow } from "@/features/onboarding";
 
 export default function DashboardPage() {
   const { profile } = useAuth();
@@ -33,6 +34,9 @@ export default function DashboardPage() {
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
+      {/* Onboarding Flow */}
+      <OnboardingFlow />
+
       {/* Welcome Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-slate-900 mb-2">
