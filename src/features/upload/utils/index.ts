@@ -6,3 +6,4 @@
 export * from "./fileValidation";
 export * from "./extractors";
 export * from "./filterSort";
+export * from "./textSanitizer";

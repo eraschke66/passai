@@ -14,6 +14,7 @@ import type {
 } from "../types/material.types";
 import { parseStudyMaterial, parseStudyMaterials } from "./schemas";
 import { FREE_TIER_STORAGE_LIMIT } from "../types/constants";
+import { sanitizeTextForDatabase } from "../utils/textSanitizer";
 
 // =====================================================
 // Create Operations
@@ -28,6 +29,11 @@ export async function createMaterial(
   payload: CreateMaterialPayload
 ): Promise<StudyMaterial | null> {
   try {
+    // Sanitize text content if provided
+    const sanitizedTextContent = payload.text_content
+      ? sanitizeTextForDatabase(payload.text_content)
+      : null;
+
     const { data, error } = await supabase
       .from("study_materials")
       .insert({
@@ -38,7 +44,7 @@ export async function createMaterial(
         file_size: payload.file_size,
         storage_path: payload.storage_path,
         thumbnail_url: payload.thumbnail_url || null,
-        text_content: payload.text_content || null,
+        text_content: sanitizedTextContent,
         processing_status:
           payload.processing_status || ProcessingStatus.PENDING,
         error_message: payload.error_message || null,
@@ -70,19 +76,26 @@ export async function createMaterials(
     const { data, error } = await supabase
       .from("study_materials")
       .insert(
-        payloads.map((payload) => ({
-          subject_id: payload.subject_id,
-          user_id: payload.user_id,
-          file_name: payload.file_name,
-          file_type: payload.file_type,
-          file_size: payload.file_size,
-          storage_path: payload.storage_path,
-          thumbnail_url: payload.thumbnail_url || null,
-          text_content: payload.text_content || null,
-          processing_status:
-            payload.processing_status || ProcessingStatus.PENDING,
-          error_message: payload.error_message || null,
-        }))
+        payloads.map((payload) => {
+          // Sanitize text content if provided
+          const sanitizedTextContent = payload.text_content
+            ? sanitizeTextForDatabase(payload.text_content)
+            : null;
+
+          return {
+            subject_id: payload.subject_id,
+            user_id: payload.user_id,
+            file_name: payload.file_name,
+            file_type: payload.file_type,
+            file_size: payload.file_size,
+            storage_path: payload.storage_path,
+            thumbnail_url: payload.thumbnail_url || null,
+            text_content: sanitizedTextContent,
+            processing_status:
+              payload.processing_status || ProcessingStatus.PENDING,
+            error_message: payload.error_message || null,
+          };
+        })
       )
       .select();
 
@@ -350,10 +363,13 @@ export async function updateMaterialTextContent(
   textContent: string
 ): Promise<boolean> {
   try {
+    // Sanitize text to remove null bytes and problematic characters
+    const sanitizedText = sanitizeTextForDatabase(textContent);
+
     const { error } = await supabase
       .from("study_materials")
       .update({
-        text_content: textContent,
+        text_content: sanitizedText,
         processing_status: ProcessingStatus.READY,
         error_message: null,
       })
