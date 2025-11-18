@@ -4,3 +4,4 @@ export { RestartTourButton } from "./components/RestartTourButton";
 export * from "./components/OnboardingSteps";
 export * from "./types";
 export { useOnboarding } from "./hooks/useOnboarding";
+export * from "./services/onboardingService";

@@ -8,6 +8,7 @@ create table public.profiles (
   subscription_tier text not null default 'free'::text,
   subscription_status text not null default 'active'::text,
   user_id uuid null,
+  onboarded boolean not null default false,
   constraint profiles_pkey primary key (email),
   constraint profiles_email_key unique (email),
   constraint profiles_user_id_fkey foreign KEY (user_id) references auth.users (id) on update CASCADE on delete CASCADE,
@@ -32,6 +33,8 @@ create table public.profiles (
 create index IF not exists profiles_email_idx on public.profiles using btree (email) TABLESPACE pg_default;
 
 create index IF not exists profiles_subscription_tier_idx on public.profiles using btree (subscription_tier) TABLESPACE pg_default;
+
+create index IF not exists profiles_onboarded_idx on public.profiles using btree (onboarded) TABLESPACE pg_default;
 
 create trigger profiles_updated_at BEFORE
 update on profiles for EACH row

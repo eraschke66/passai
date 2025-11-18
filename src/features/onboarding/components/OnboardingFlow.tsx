@@ -9,6 +9,7 @@ import {
   ProgressStep,
 } from "./OnboardingSteps";
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import { markOnboardingComplete } from "../services/onboardingService";
 
 const ONBOARDING_STEPS = [
   {
@@ -50,14 +51,12 @@ export const OnboardingFlow: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if user needs onboarding
+    // Check if user needs onboarding from database
     const checkOnboardingStatus = async () => {
-      if (!profile?.user_id) return;
+      if (!profile?.user_id || !profile) return;
 
-      // Check if user has completed onboarding
-      const hasCompletedOnboarding = localStorage.getItem(
-        `onboarding_completed_${profile.user_id}`
-      );
+      // Check the onboarded field from profile
+      const hasCompletedOnboarding = profile.onboarded ?? false;
 
       if (!hasCompletedOnboarding) {
         // Small delay for better UX
@@ -82,16 +81,24 @@ export const OnboardingFlow: React.FC = () => {
     }
   };
 
-  const handleSkip = () => {
+  const handleSkip = async () => {
     if (profile?.user_id) {
-      localStorage.setItem(`onboarding_completed_${profile.user_id}`, "true");
+      try {
+        await markOnboardingComplete(profile.user_id);
+      } catch (error) {
+        console.error("Failed to mark onboarding as complete:", error);
+      }
     }
     setIsOpen(false);
   };
 
-  const handleClose = () => {
+  const handleClose = async () => {
     if (profile?.user_id) {
-      localStorage.setItem(`onboarding_completed_${profile.user_id}`, "true");
+      try {
+        await markOnboardingComplete(profile.user_id);
+      } catch (error) {
+        console.error("Failed to mark onboarding as complete:", error);
+      }
     }
     setIsOpen(false);
   };

@@ -40,10 +40,10 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm overflow-y-auto">
+      <div className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl my-8 flex flex-col max-h-[90vh]">
         {/* Header */}
-        <div className="relative bg-linear-to-r from-blue-600 to-indigo-600 p-6 text-white">
+        <div className="relative bg-linear-to-r from-blue-600 to-indigo-600 p-6 text-white shrink-0">
           <button
             onClick={onClose}
             className="absolute top-4 right-4 p-2 rounded-lg hover:bg-white/20 transition-colors"
@@ -60,18 +60,18 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
         </div>
 
         {/* Progress Bar */}
-        <div className="h-1.5 bg-slate-100">
+        <div className="h-1.5 bg-slate-100 shrink-0">
           <div
             className="h-full bg-linear-to-r from-blue-600 to-indigo-600 transition-all duration-300"
             style={{ width: `${((currentStep + 1) / totalSteps) * 100}%` }}
           />
         </div>
 
-        {/* Content */}
-        <div className="p-8">{children}</div>
+        {/* Content - Scrollable */}
+        <div className="p-8 overflow-y-auto flex-1">{children}</div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between p-6 bg-slate-50 border-t border-slate-200">
+        <div className="flex items-center justify-between p-6 bg-slate-50 border-t border-slate-200 shrink-0">
           <div className="flex gap-2">
             {canGoPrev && (
               <button

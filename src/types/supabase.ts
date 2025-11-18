@@ -20,31 +20,36 @@ export type Database = {
           email: string;
           first_name: string;
           id: string;
-          user_id: string;
+          user_id: string | null;
           last_name: string;
           subscription_status: string;
           subscription_tier: string;
           updated_at: string;
+          onboarded: boolean;
         };
         Insert: {
           created_at?: string;
           email: string;
           first_name: string;
           id: string;
+          user_id?: string | null;
           last_name: string;
           subscription_status?: string;
           subscription_tier?: string;
           updated_at?: string;
+          onboarded?: boolean;
         };
         Update: {
           created_at?: string;
           email?: string;
           first_name?: string;
           id?: string;
+          user_id?: string | null;
           last_name?: string;
           subscription_status?: string;
           subscription_tier?: string;
           updated_at?: string;
+          onboarded?: boolean;
         };
         Relationships: [];
       };

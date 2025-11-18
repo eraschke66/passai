@@ -119,6 +119,7 @@ export type Database = {
           first_name: string
           id: string
           last_name: string
+          onboarded: boolean
           subscription_status: string
           subscription_tier: string
           updated_at: string
@@ -128,8 +129,9 @@ export type Database = {
           created_at?: string
           email: string
           first_name: string
-          id: string
+          id?: string
           last_name: string
+          onboarded?: boolean
           subscription_status?: string
           subscription_tier?: string
           updated_at?: string
@@ -141,6 +143,7 @@ export type Database = {
           first_name?: string
           id?: string
           last_name?: string
+          onboarded?: boolean
           subscription_status?: string
           subscription_tier?: string
           updated_at?: string
@@ -827,12 +830,14 @@ export type Database = {
           created_at: string
           description: string | null
           exam_board: string | null
+          grading_rubric: string | null
           icon: string
           id: string
           last_studied_at: string | null
           name: string
           pass_chance: number | null
           progress: number | null
+          question_style: string | null
           teacher_emphasis: string | null
           test_date: string | null
           updated_at: string
@@ -843,12 +848,14 @@ export type Database = {
           created_at?: string
           description?: string | null
           exam_board?: string | null
+          grading_rubric?: string | null
           icon?: string
           id?: string
           last_studied_at?: string | null
           name: string
           pass_chance?: number | null
           progress?: number | null
+          question_style?: string | null
           teacher_emphasis?: string | null
           test_date?: string | null
           updated_at?: string
@@ -859,12 +866,14 @@ export type Database = {
           created_at?: string
           description?: string | null
           exam_board?: string | null
+          grading_rubric?: string | null
           icon?: string
           id?: string
           last_studied_at?: string | null
           name?: string
           pass_chance?: number | null
           progress?: number | null
+          question_style?: string | null
           teacher_emphasis?: string | null
           test_date?: string | null
           updated_at?: string
@@ -942,9 +951,14 @@ export type Database = {
       }
       user_answers: {
         Row: {
+          ai_grading_feedback: string | null
           attempt_id: string
           created_at: string
           feedback: string | null
+          grading_score: number | null
+          grading_status:
+            | Database["public"]["Enums"]["grading_status_enum"]
+            | null
           id: string
           is_correct: boolean
           question_id: string
@@ -953,9 +967,14 @@ export type Database = {
           user_answer: string | null
         }
         Insert: {
+          ai_grading_feedback?: string | null
           attempt_id: string
           created_at?: string
           feedback?: string | null
+          grading_score?: number | null
+          grading_status?:
+            | Database["public"]["Enums"]["grading_status_enum"]
+            | null
           id?: string
           is_correct: boolean
           question_id: string
@@ -964,9 +983,14 @@ export type Database = {
           user_answer?: string | null
         }
         Update: {
+          ai_grading_feedback?: string | null
           attempt_id?: string
           created_at?: string
           feedback?: string | null
+          grading_score?: number | null
+          grading_status?:
+            | Database["public"]["Enums"]["grading_status_enum"]
+            | null
           id?: string
           is_correct?: boolean
           question_id?: string
@@ -999,7 +1023,7 @@ export type Database = {
       get_user_storage_usage: { Args: { user_uuid: string }; Returns: number }
     }
     Enums: {
-      [_ in never]: never
+      grading_status_enum: "pending" | "grading" | "graded" | "not_required"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1126,6 +1150,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      grading_status_enum: ["pending", "grading", "graded", "not_required"],
+    },
   },
 } as const

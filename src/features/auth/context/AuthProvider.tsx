@@ -17,6 +17,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
 
   // Fetch profile data when user changes
   const fetchProfile = async (userId: string) => {
+    console.log("User ID for profile fetch:", userId);
     try {
       const { data, error } = await supabase
         .from("profiles")
