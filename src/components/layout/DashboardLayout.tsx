@@ -8,7 +8,6 @@ import {
   LogOut,
   Book,
 } from "lucide-react";
-import { useState } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { signOut } from "@/features/auth/services/authService";
@@ -59,10 +58,7 @@ export default function DashboardLayout() {
   const { profile } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [activeNav, setActiveNav] = useState(
-    navigationItems.find((item) => location.pathname === item.path)?.id ||
-      "dashboard"
-  );
+  const isActive = (path: string) => location.pathname.startsWith(path);
 
   const handleLogout = async () => {
     await signOut();
@@ -93,17 +89,14 @@ export default function DashboardLayout() {
                     <li key={item.id}>
                       <button
                         onClick={() => {
-                          setActiveNav(item.id);
                           navigate(item.path);
                         }}
                         className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
-                          activeNav === item.id
+                          isActive(item.path)
                             ? "bg-linear-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/25"
                             : "text-slate-700 hover:bg-slate-50 hover:text-slate-900"
                         }`}
-                        aria-current={
-                          activeNav === item.id ? "page" : undefined
-                        }
+                        aria-current={isActive(item.path) ? "page" : undefined}
                       >
                         <Icon className="w-5 h-5" />
                         <span className="flex-1 text-left font-semibold text-sm">
@@ -112,7 +105,7 @@ export default function DashboardLayout() {
                         {item.badge && (
                           <span
                             className={`px-2 py-0.5 rounded-full text-xs font-bold ${
-                              activeNav === item.id
+                              isActive(item.path)
                                 ? "bg-white/20 text-white"
                                 : "bg-blue-100 text-blue-600"
                             }`}
@@ -136,7 +129,11 @@ export default function DashboardLayout() {
             </button>
             <button
               onClick={() => navigate("/settings")}
-              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-700 hover:bg-slate-50 transition-all"
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                isActive("/settings")
+                  ? "bg-linear-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/25"
+                  : "text-slate-700 hover:bg-slate-50"
+              }`}
             >
               <Settings className="w-5 h-5" />
               <span className="text-sm font-semibold">Settings</span>
@@ -200,18 +197,17 @@ export default function DashboardLayout() {
                 <button
                   key={item.id}
                   onClick={() => {
-                    setActiveNav(item.id);
                     navigate(item.path);
                   }}
                   className={`relative flex flex-col items-center justify-center gap-1 py-2 px-2 rounded-xl transition-all active:scale-95 ${
-                    activeNav === item.id ? "text-blue-600" : "text-slate-500"
+                    isActive(item.path) ? "text-blue-600" : "text-slate-500"
                   }`}
-                  aria-current={activeNav === item.id ? "page" : undefined}
+                  aria-current={isActive(item.path) ? "page" : undefined}
                 >
                   <div className="relative">
                     <Icon
                       className={`w-5 h-5 ${
-                        activeNav === item.id ? "scale-110" : ""
+                        isActive(item.path) ? "scale-110" : ""
                       } transition-transform`}
                     />
                     {item.badge && (
@@ -222,12 +218,12 @@ export default function DashboardLayout() {
                   </div>
                   <span
                     className={`text-[10px] font-semibold ${
-                      activeNav === item.id ? "text-blue-600" : "text-slate-500"
+                      isActive(item.path) ? "text-blue-600" : "text-slate-500"
                     }`}
                   >
                     {item.label.split(" ")[0]}
                   </span>
-                  {activeNav === item.id && (
+                  {isActive(item.path) && (
                     <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-1 bg-blue-600 rounded-full"></div>
                   )}
                 </button>
