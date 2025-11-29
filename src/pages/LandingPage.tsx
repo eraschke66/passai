@@ -18,7 +18,7 @@ export default function LandingPage() {
           <div className="text-center">
             {/* Logo */}
             <div className="mb-8">
-              <Logo size={80} className="mx-auto" />
+              <Logo size={80} className="mx-auto justify-center" />
             </div>
 
             {/* Main Heading */}

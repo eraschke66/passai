@@ -42,7 +42,7 @@ export default function LoginPage() {
         {/* Logo and Header */}
         <div className="text-center mb-8">
           <div className="mb-4">
-            <Logo size={64} className="mx-auto" />
+            <Logo size={64} className="mx-auto justify-center" />
           </div>
           <h1 className="text-3xl font-bold text-slate-900 mb-2">
             Welcome back
