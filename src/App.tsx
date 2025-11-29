@@ -9,7 +9,7 @@ import ResetPasswordPage from "@/features/auth/pages/ResetPasswordPage";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import PublicRoute from "@/features/auth/components/routes/PublicRoute";
 import ProtectedRoute from "@/features/auth/components/routes/ProtectedRoute";
-import LandingPage from "@/pages/LandingPage";
+import LandingPage from "@/features/landing/LandingPage";
 import DashboardPage from "@/features/dashboard/pages/DashboardPage";
 import SubjectsPage from "@/features/subjects/pages/SubjectsPage";
 import SubjectDetailPage from "@/features/subjects/pages/SubjectDetailPage";
