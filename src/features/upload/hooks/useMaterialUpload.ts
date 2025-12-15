@@ -3,26 +3,26 @@
  * Orchestrates the complete upload process: validation → storage → extraction → database
  */
 
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useAuth } from "@/features/auth/hooks/useAuth";
-import { validateFiles, getMaterialType } from "../utils/fileValidation";
+import { getMaterialType, validateFiles } from "../utils/fileValidation";
 import { uploadFile } from "../services/storageService";
 import {
   createMaterial,
+  getUserStorageUsage,
   updateMaterialStatus,
   updateMaterialTextContent,
-  getUserStorageUsage,
 } from "../services/materialService";
 import { extractText } from "../utils/extractors";
 import { ProcessingStatus } from "../types/material.types";
 import {
-  sanitizeFileName,
   generateUniqueFileName,
+  sanitizeFileName,
 } from "../services/storageService";
 import { ERROR_MESSAGES } from "../types/constants";
 import type {
-  UploadProgress,
   BatchUploadResult,
+  UploadProgress,
   UploadResult,
 } from "../types/material.types";
 
@@ -50,7 +50,7 @@ export function useMaterialUpload() {
         return newMap;
       });
     },
-    []
+    [],
   );
 
   /**
@@ -145,7 +145,7 @@ export function useMaterialUpload() {
           materialType,
           (ocrProgress) => {
             updateProgress(fileId, { progress: 80 + ocrProgress * 0.15 }); // 80-95%
-          }
+          },
         );
 
         if (!extractionResult.success || !extractionResult.text) {
@@ -153,7 +153,7 @@ export function useMaterialUpload() {
           await updateMaterialStatus(
             material.id,
             ProcessingStatus.FAILED,
-            extractionResult.error || "Text extraction failed"
+            extractionResult.error || "Text extraction failed",
           );
           updateProgress(fileId, {
             status: "failed",
@@ -172,7 +172,7 @@ export function useMaterialUpload() {
         updateProgress(fileId, { progress: 95 });
         const updateSuccess = await updateMaterialTextContent(
           material.id,
-          extractionResult.text
+          extractionResult.text,
         );
 
         if (!updateSuccess) {
@@ -200,8 +200,9 @@ export function useMaterialUpload() {
           materialId: material.id,
         };
       } catch (error) {
-        const errorMessage =
-          error instanceof Error ? error.message : "Unknown error";
+        const errorMessage = error instanceof Error
+          ? error.message
+          : "Unknown error";
         updateProgress(fileId, { status: "failed", error: errorMessage });
         return {
           success: false,
@@ -210,7 +211,7 @@ export function useMaterialUpload() {
         };
       }
     },
-    [user?.id, updateProgress]
+    [user?.id, updateProgress],
   );
 
   /**
@@ -239,7 +240,7 @@ export function useMaterialUpload() {
         const validation = validateFiles(
           files,
           storageUsage.used,
-          storageUsage.limit
+          storageUsage.limit,
         );
 
         // Handle batch errors
@@ -290,7 +291,7 @@ export function useMaterialUpload() {
         setIsUploading(false);
       }
     },
-    [user?.id, uploadSingleFile]
+    [user?.id, uploadSingleFile],
   );
 
   /**
@@ -307,7 +308,7 @@ export function useMaterialUpload() {
     async (file: File, subjectId: string): Promise<UploadResult> => {
       return uploadSingleFile(file, subjectId);
     },
-    [uploadSingleFile]
+    [uploadSingleFile],
   );
 
   return {

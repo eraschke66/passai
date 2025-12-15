@@ -1,4 +1,8 @@
-import { openai } from "@/lib/ai/openai";
+// ⚠️ TODO: Migrate to Edge Function (Future Task)
+// This file still uses the deprecated frontend OpenAI client.
+// Should be migrated to Edge Function similar to quiz generation and grading.
+
+import { openai } from "@/lib/ai/openai"; // TODO: Migrate to Edge Function
 import { supabase } from "@/lib/supabase/client";
 
 type GeneratedStudyPlan = {
@@ -45,9 +49,9 @@ export const generateStudyPlan = async (settings: {
   // Calculate days until test
   const daysUntilTest = testDate
     ? Math.ceil(
-        (new Date(testDate).getTime() - new Date().getTime()) /
-          (1000 * 60 * 60 * 24)
-      )
+      (new Date(testDate).getTime() - new Date().getTime()) /
+        (1000 * 60 * 60 * 24),
+    )
     : 30; // Default to 30 days if no test date
 
   // Build system prompt
@@ -97,36 +101,46 @@ STUDENT CONTEXT:
 - Days until test: ${daysUntilTest} days
 - Available study time: ${availableHoursPerWeek} hours per week
 - Current projected pass chance: ${currentPassChance || "Not calculated"}%
-- Total available study hours: ${Math.floor(
-    (daysUntilTest / 7) * availableHoursPerWeek
-  )} hours
+- Total available study hours: ${
+    Math.floor(
+      (daysUntilTest / 7) * availableHoursPerWeek,
+    )
+  } hours
 
 QUIZ PERFORMANCE ANALYSIS:
 ${quizPerformance.summary}
 
 Topics with LOW performance (need HIGH priority):
-${quizPerformance.weakTopics
-  .map((t) => `- ${t.name}: ${t.score}% correct`)
-  .join("\n")}
+${
+    quizPerformance.weakTopics
+      .map((t) => `- ${t.name}: ${t.score}% correct`)
+      .join("\n")
+  }
 
 Topics with MEDIUM performance (need MEDIUM priority):
-${quizPerformance.mediumTopics
-  .map((t) => `- ${t.name}: ${t.score}% correct`)
-  .join("\n")}
+${
+    quizPerformance.mediumTopics
+      .map((t) => `- ${t.name}: ${t.score}% correct`)
+      .join("\n")
+  }
 
 Topics with HIGH performance (need LOW priority for reinforcement):
-${quizPerformance.strongTopics
-  .map((t) => `- ${t.name}: ${t.score}% correct`)
-  .join("\n")}
+${
+    quizPerformance.strongTopics
+      .map((t) => `- ${t.name}: ${t.score}% correct`)
+      .join("\n")
+  }
 
 Specific mistakes to address:
-${quizPerformance.incorrectAnswers
-  .slice(0, 5)
-  .map(
-    (q) =>
-      `- ${q.topic}: ${q.question} (Student answered: ${q.userAnswer}, Correct: ${q.correctAnswer})`
-  )
-  .join("\n")}
+${
+    quizPerformance.incorrectAnswers
+      .slice(0, 5)
+      .map(
+        (q) =>
+          `- ${q.topic}: ${q.question} (Student answered: ${q.userAnswer}, Correct: ${q.correctAnswer})`,
+      )
+      .join("\n")
+  }
 
 Response format - you MUST use this EXACT structure:
 {
@@ -217,7 +231,7 @@ async function fetchQuizPerformanceData(quizAttemptId: string) {
             difficulty
           )
         )
-      `
+      `,
       )
       .eq("id", quizAttemptId)
       .single();
@@ -264,7 +278,7 @@ async function fetchQuizPerformanceData(quizAttemptId: string) {
     questions.forEach((question) => {
       const topic = question.topic || "General";
       const userAnswer = userAnswers?.find(
-        (ua) => ua.question_id === question.id
+        (ua) => ua.question_id === question.id,
       );
 
       if (!topicPerformance.has(topic)) {

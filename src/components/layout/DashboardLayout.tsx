@@ -13,6 +13,26 @@ import { useAuth } from "@/features/auth/hooks/useAuth";
 import { signOut } from "@/features/auth/services/authService";
 import { Logo } from "@/components/ui/Logo";
 
+/*----------------------------------------------*/
+
+// import * as Sentry from '@sentry/react';
+
+function ErrorButton() {
+  return (
+    <button
+      onClick={() => {
+        throw new Error('This is your first error!');
+      }}
+    >
+      Break the world
+    </button>
+  );
+}
+
+/*----------------------------------------------*/
+
+
+
 type NavigationItem = {
   id: string;
   label: string;
@@ -117,6 +137,7 @@ export default function DashboardLayout() {
                     </li>
                   );
                 })}
+                <ErrorButton />  {/* Sentry Test */}
               </ul>
             </div>
           </nav>

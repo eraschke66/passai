@@ -9,7 +9,7 @@ import type {
   Subject,
 } from "../types/quiz";
 import type { Subject as SubjectType } from "@/features/subjects/types";
-import { generateQuizQuestions } from "../lib/quizGen";
+// import { generateQuizQuestions } from "../lib/quizGen"; // DEPRECATED: Now using Edge Function
 import {
   updateMasteryFromQuizResults,
   updateSubjectPassChance,
@@ -37,7 +37,7 @@ export const getQuizzes = async (): Promise<QuizWithSubject[]> => {
 };
 
 export const getQuiz = async (
-  quizId: string
+  quizId: string,
 ): Promise<QuizWithSubject | null> => {
   const { data, error } = await supabase
     .from("quizzes")
@@ -54,7 +54,7 @@ export const getQuiz = async (
 };
 
 export const getQuizAttempts = async (
-  quizId: string
+  quizId: string,
 ): Promise<QuizAttempt[]> => {
   const { data, error } = await supabase
     .from("quiz_attempts")
@@ -84,7 +84,7 @@ export const getAttemptQuestions = async (attemptId: string) => {
 export const submitQuizAttempt = (
   quizId: string,
   results: QuestionResult[],
-  score: number
+  score: number,
 ): Promise<unknown> => {
   // Implementation to submit quiz attempt
   console.log("submitQuizAttempt called - placeholder", {
@@ -97,7 +97,7 @@ export const submitQuizAttempt = (
 
 export const updateQuizAttempt = (
   attemptId: string,
-  updates: Partial<QuizAttempt>
+  updates: Partial<QuizAttempt>,
 ) => {
   console.log("updateQuizAttempt called - placeholder", { attemptId, updates });
   return Promise.resolve({} as QuizAttempt);
@@ -159,10 +159,9 @@ export const createQuizAttempt = async (userId: string, quizId: string) => {
     throw attemptsError;
   }
 
-  const attemptNumber =
-    existingAttempts && existingAttempts.length > 0
-      ? existingAttempts[0].attempt_number + 1
-      : 1;
+  const attemptNumber = existingAttempts && existingAttempts.length > 0
+    ? existingAttempts[0].attempt_number + 1
+    : 1;
 
   const quizAttempt = {
     quiz_id: quizId,
@@ -211,7 +210,7 @@ export const generateAndCreateQuiz = async (
   userId: string,
   subjectId: string,
   settings: QuizSettings,
-  materialIds: string[]
+  materialIds: string[],
 ): Promise<{ quizId: string; questions: Question[] }> => {
   // Fetch subject data for teacher layer customization
   const { data: subject, error: subjectError } = await supabase
@@ -224,7 +223,7 @@ export const generateAndCreateQuiz = async (
   if (subjectError) {
     console.warn(
       "Could not fetch subject data, generating without teacher layer:",
-      subjectError
+      subjectError,
     );
   }
 
@@ -236,22 +235,51 @@ export const generateAndCreateQuiz = async (
     .eq("user_id", userId);
   if (matError) throw matError;
 
-  const combinedText = materials?.map((m) => m.text_content).join("\n\n") || "";
-  if (!combinedText) throw new Error("No content available in materials");
+  // Generate questions via Edge Function (secure, server-side OpenAI call)
+  console.log("🚀 Calling generate-quiz Edge Function...");
 
-  // Generate questions via OpenAI with teacher layer customization
-  const generatedQuestions = await generateQuizQuestions(
-    combinedText,
-    settings,
-    subject as SubjectType | undefined // Pass subject data for curriculum-aligned prompts
+  const { data: edgeFunctionResponse, error: edgeFunctionError } =
+    await supabase.functions.invoke(
+      "generate-quiz",
+      {
+        body: {
+          subjectId,
+          materialIds,
+          settings,
+        },
+      },
+    );
+
+  if (edgeFunctionError) {
+    console.error("❌ Edge Function error:", edgeFunctionError);
+    throw new Error(`Failed to generate quiz: ${edgeFunctionError.message}`);
+  }
+
+  if (!edgeFunctionResponse || !edgeFunctionResponse.questions) {
+    console.error(
+      "❌ Invalid response from Edge Function:",
+      edgeFunctionResponse,
+    );
+    throw new Error("Invalid response from quiz generation service");
+  }
+
+  const generatedQuestions = edgeFunctionResponse.questions;
+  console.log(
+    "✅ Generated questions from Edge Function:",
+    generatedQuestions.length,
   );
+
+  // Log usage stats if available
+  if (edgeFunctionResponse.usage) {
+    console.log("📊 OpenAI usage:", edgeFunctionResponse.usage);
+  }
 
   // Create quiz
   const newQuiz = {
     user_id: userId,
     subject_id: subjectId,
-    title:
-      settings.customTitle || `AI Quiz: ${settings.questionCount} Questions`,
+    title: settings.customTitle ||
+      `AI Quiz: ${settings.questionCount} Questions`,
     description: `Generated from ${materialIds.length} materials. Focus: ${
       settings.focusAreas || "General"
     }.`,
@@ -281,7 +309,7 @@ export const generateAndCreateQuiz = async (
   const missingConcepts = questionsWithQuizId.filter((q) => !q.concept);
   if (missingConcepts.length > 0) {
     console.warn(
-      `⚠️ ${missingConcepts.length} questions are missing concept field - BKT tracking will use topic instead`
+      `⚠️ ${missingConcepts.length} questions are missing concept field - BKT tracking will use topic instead`,
     );
     // Fallback: use topic as concept if concept is missing
     questionsWithQuizId.forEach((q) => {
@@ -318,7 +346,7 @@ export const generateAndCreateQuiz = async (
  * Get a single quiz attempt by ID
  */
 export const getAttemptById = async (
-  attemptId: string
+  attemptId: string,
 ): Promise<QuizAttempt | null> => {
   console.log("🔍 Fetching attempt by ID:", attemptId);
 
@@ -342,7 +370,7 @@ export const getAttemptById = async (
  */
 export const getActiveAttempt = async (
   userId: string,
-  quizId: string
+  quizId: string,
 ): Promise<QuizAttempt | null> => {
   console.log("🔍 Checking for active attempt:", { userId, quizId });
 
@@ -369,7 +397,7 @@ export const getActiveAttempt = async (
  * Get user answers for an attempt (for resume functionality)
  */
 export const getAttemptAnswers = async (
-  attemptId: string
+  attemptId: string,
 ): Promise<QuestionResult[]> => {
   console.log("🔍 Fetching answers for attempt:", attemptId);
 
@@ -385,16 +413,15 @@ export const getAttemptAnswers = async (
   }
 
   // Transform to QuestionResult format
-  const results: QuestionResult[] =
-    data?.map((answer) => ({
-      questionId: answer.question_id,
-      userAnswer: answer.user_answer || "",
-      correctAnswer: "", // Will be fetched from questions
-      isCorrect: answer.is_correct,
-      timeSpent: answer.time_spent,
-      wasAnswered: answer.user_answer !== null,
-      feedback: answer.feedback as "thumbs-up" | "thumbs-down" | undefined,
-    })) || [];
+  const results: QuestionResult[] = data?.map((answer) => ({
+    questionId: answer.question_id,
+    userAnswer: answer.user_answer || "",
+    correctAnswer: "", // Will be fetched from questions
+    isCorrect: answer.is_correct,
+    timeSpent: answer.time_spent,
+    wasAnswered: answer.user_answer !== null,
+    feedback: answer.feedback as "thumbs-up" | "thumbs-down" | undefined,
+  })) || [];
 
   console.log("✅ Answers fetched:", results.length);
   return results;
@@ -409,7 +436,7 @@ export const saveUserAnswer = async (
   userAnswer: string,
   isCorrect: boolean,
   timeSpent: number,
-  currentQuestionIndex: number
+  currentQuestionIndex: number,
 ): Promise<void> => {
   console.log("💾 Saving user answer:", {
     attemptId,
@@ -428,7 +455,7 @@ export const saveUserAnswer = async (
     },
     {
       onConflict: "attempt_id,question_id",
-    }
+    },
   );
 
   if (answerError) {
@@ -460,7 +487,7 @@ export const completeQuizAttempt = async (
   score: number,
   correctAnswers: number,
   totalTimeSpent: number,
-  mood?: string | null
+  mood?: string | null,
 ): Promise<void> => {
   console.log("🏁 Completing quiz attempt:", { attemptId, score, mood });
 
@@ -530,7 +557,7 @@ export const completeQuizAttempt = async (
  * This is called automatically after a quiz is completed
  */
 export const updateMasteryAfterQuiz = async (
-  attemptId: string
+  attemptId: string,
 ): Promise<void> => {
   console.log("🧠 Updating BKT mastery for attempt:", attemptId);
 
@@ -566,7 +593,7 @@ export const updateMasteryAfterQuiz = async (
         topic,
         concept
       )
-    `
+    `,
     )
     .eq("attempt_id", attemptId);
 
@@ -606,22 +633,22 @@ export const updateMasteryAfterQuiz = async (
     async ([topicName, correctnessArray]) => {
       try {
         console.log(
-          `  └─ ${topicName}: ${correctnessArray.filter((c) => c).length}/${
-            correctnessArray.length
-          } correct`
+          `  └─ ${topicName}: ${
+            correctnessArray.filter((c) => c).length
+          }/${correctnessArray.length} correct`,
         );
 
         const result = await updateMasteryFromQuizResults(
           quiz.subject_id,
           topicName,
-          correctnessArray
+          correctnessArray,
         );
 
         if (result.error) {
           console.error(`    ❌ Error updating ${topicName}:`, result.error);
         } else {
           console.log(
-            `    ✅ ${topicName} mastery: ${result.data?.mastery_level}%`
+            `    ✅ ${topicName} mastery: ${result.data?.mastery_level}%`,
           );
         }
 
@@ -630,7 +657,7 @@ export const updateMasteryAfterQuiz = async (
         console.error(`    ❌ Exception updating ${topicName}:`, error);
         return { data: null, error: String(error) };
       }
-    }
+    },
   );
 
   await Promise.all(updatePromises);
@@ -655,7 +682,7 @@ export const updateMasteryAfterQuiz = async (
  * Useful for showing improvement/progress after completing a quiz
  */
 export const getMasterySummaryAfterQuiz = async (
-  attemptId: string
+  attemptId: string,
 ): Promise<{
   topicsUpdated: number;
   averageMastery: number;
@@ -717,7 +744,7 @@ export const getMasterySummaryAfterQuiz = async (
   // Calculate average mastery
   const totalMastery = masteryRecords.reduce(
     (sum, record) => sum + record.mastery_level,
-    0
+    0,
   );
   const averageMastery = Math.round(totalMastery / masteryRecords.length);
 
@@ -725,7 +752,7 @@ export const getMasterySummaryAfterQuiz = async (
   const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
   const recentlyUpdated = masteryRecords.filter(
     (record) =>
-      record.last_practiced_at && record.last_practiced_at >= fiveMinutesAgo
+      record.last_practiced_at && record.last_practiced_at >= fiveMinutesAgo,
   );
 
   // Categorize topics

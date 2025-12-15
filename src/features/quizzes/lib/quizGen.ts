@@ -1,4 +1,12 @@
-import { openai } from "@/lib/ai/openai";
+// DEPRECATED: December 14, 2025
+// This file has been migrated to Edge Function: supabase/functions/generate-quiz/index.ts
+// See: src/features/quizzes/lib/DEPRECATED_quizGen.md for migration details
+//
+// ⚠️ DO NOT USE - Use supabase.functions.invoke('generate-quiz', {...}) instead
+//
+// Keeping file temporarily for reference during testing phase.
+
+// import { openai } from "@/lib/ai/openai"; // DEPRECATED
 import type { Subject } from "@/features/subjects/types";
 
 type GeneratedQuestionsType = {
@@ -33,15 +41,14 @@ export const generateQuizQuestions = async (
     };
     focusAreas: string;
   },
-  subject?: Subject // Optional subject for teacher layer customization
+  subject?: Subject, // Optional subject for teacher layer customization
 ): Promise<GeneratedQuestionsType[]> => {
   // Truncate material content if too long (keep under ~6000 tokens for safety)
   const maxContentLength = 8000;
-  const truncatedContent =
-    combinedText.length > maxContentLength
-      ? combinedText.substring(0, maxContentLength) +
-        "\n\n[Content truncated...]"
-      : combinedText;
+  const truncatedContent = combinedText.length > maxContentLength
+    ? combinedText.substring(0, maxContentLength) +
+      "\n\n[Content truncated...]"
+    : combinedText;
 
   // Extract teacher layer data
   const examBoard = subject?.exam_board || null;
@@ -55,7 +62,7 @@ export const generateQuizQuestions = async (
     examBoard,
     questionStyle,
     teacherEmphasis,
-    gradingRubric
+    gradingRubric,
   );
 
   // Build user prompt
@@ -88,16 +95,18 @@ function buildCurriculumAlignedPrompt(
   examBoard: string | null,
   questionStyle: string,
   teacherEmphasis: string | null,
-  gradingRubric: string | null
+  gradingRubric: string | null,
 ): string {
   let prompt = `You are an expert educational quiz generator.`;
 
   // Add exam board context
   if (examBoard && examBoard !== "Other") {
-    prompt += ` You are specifically creating questions for the ${examBoard} ${subjectName} exam.`;
+    prompt +=
+      ` You are specifically creating questions for the ${examBoard} ${subjectName} exam.`;
     prompt += getExamBoardGuidance(examBoard);
   } else {
-    prompt += ` Your task is to create high-quality ${subjectName} quiz questions.`;
+    prompt +=
+      ` Your task is to create high-quality ${subjectName} quiz questions.`;
   }
 
   // Add standard requirements
@@ -301,11 +310,10 @@ function buildUserPrompt(
     subjectName: string;
     difficulty: string;
   },
-  examBoard: string | null
+  examBoard: string | null,
 ): string {
-  let prompt = `Generate ${settings.questionCount} ${
-    settings.difficulty
-  } difficulty quiz questions from the following study material.
+  let prompt =
+    `Generate ${settings.questionCount} ${settings.difficulty} difficulty quiz questions from the following study material.
 
 ${settings.subjectName ? `Subject: ${settings.subjectName}` : ""}`;
 

@@ -1,5 +1,14 @@
+// DEPRECATED: December 14, 2025
+// This file has been migrated to Edge Function: supabase/functions/grade-response/index.ts
+// See: src/features/quizzes/services/DEPRECATED_aiGradingService.md for migration details
+//
+// ⚠️ DO NOT USE - Use supabase.functions.invoke('grade-response', {...}) instead
+//
+// Keeping file temporarily for reference during testing phase.
+
 import OpenAI from "openai";
 
+// ⚠️ DEPRECATED - This should not be used anymore
 const openai = new OpenAI({
   apiKey: import.meta.env.VITE_OPENAI_API_KEY,
   dangerouslyAllowBrowser: true,
@@ -36,9 +45,10 @@ export const gradeShortAnswer = async (
     subject?: string;
     topic?: string;
     difficulty?: string;
-  }
+  },
 ): Promise<GradingResult> => {
-  const systemPrompt = `You are an expert teacher grading short answer questions. 
+  const systemPrompt =
+    `You are an expert teacher grading short answer questions. 
   
 Your task:
 1. Compare the student's answer to the model answer
@@ -136,7 +146,7 @@ export const gradeEssay = async (
     subject?: string;
     topic?: string;
     difficulty?: string;
-  }
+  },
 ): Promise<EssayGradingResult> => {
   const systemPrompt = `You are an expert teacher grading essay questions.
 
@@ -254,7 +264,7 @@ export const gradeWithCache = async (
     subject?: string;
     topic?: string;
     difficulty?: string;
-  }
+  },
 ): Promise<GradingResult> => {
   // Check cache first
   const cacheKey = getCacheKey(questionId, studentAnswer);
@@ -265,10 +275,9 @@ export const gradeWithCache = async (
   }
 
   // Grade based on type
-  const result =
-    questionType === "essay"
-      ? await gradeEssay(question, modelAnswer, studentAnswer, rubric, context)
-      : await gradeShortAnswer(question, modelAnswer, studentAnswer, context);
+  const result = questionType === "essay"
+    ? await gradeEssay(question, modelAnswer, studentAnswer, rubric, context)
+    : await gradeShortAnswer(question, modelAnswer, studentAnswer, context);
 
   // Cache the result
   gradingCache.set(cacheKey, result);

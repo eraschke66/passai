@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createStudySession } from "@/features/study-plan/services/study-sessions.service";
+import { createStudySession } from "@/features/study/services/studySessionsService";
 import { updateLastStudied } from "@/features/subjects/services/subjectService";
 
 interface LogStudySessionParams {
@@ -50,7 +50,7 @@ export function useLogStudySession() {
         // Log warning but don't fail - session was still created
         console.warn(
           "Failed to update last_studied_at:",
-          lastStudiedResult.error
+          lastStudiedResult.error,
         );
       }
 

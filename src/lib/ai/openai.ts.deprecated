@@ -8,8 +8,11 @@
 //
 // See: src/lib/ai/DEPRECATED.md for details
 
-// ⚠️ DEPRECATED - DO NOT USE
-// Keeping this file temporarily for reference during testing phase.
-// Will be deleted after full verification of Edge Functions.
-//
-// If you see imports of this file, they should be removed or updated to use Edge Functions.
+import OpenAI from "openai";
+
+// ⚠️ DO NOT USE - Security vulnerability
+// Initialize OpenAI client
+export const openai = new OpenAI({
+  apiKey: import.meta.env.VITE_OPENAI_API_KEY,
+  dangerouslyAllowBrowser: true, // Note: In production, call OpenAI from backend
+});

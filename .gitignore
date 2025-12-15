@@ -143,3 +143,5 @@ vite.config.ts.timestamp-*
 # supabase/
 complete_md/
 md/
+
+work_md/
