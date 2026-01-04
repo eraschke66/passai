@@ -5,7 +5,10 @@ import { QuizSession } from "../components/quizsession/QuizSession";
 import { useQuiz } from "../hooks/useQuiz";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 import { useActiveAttempt } from "../hooks/useActiveAttempt";
-import { getAttemptAnswers, getAttemptById } from "../services/quizzesService";
+import {
+  getAttemptAnswers,
+  getAttemptById,
+} from "../services/quizAttemptService";
 import type { QuestionResult } from "../types/quiz";
 
 export const QuizSessionPage = () => {

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getActiveAttempt } from "../services/quizzesService";
+import { getActiveAttempt } from "../services/quizAttemptService";
 
 export const useActiveAttempt = (userId: string, quizId: string) => {
   return useQuery({

@@ -11,7 +11,7 @@ import { QuizMaterials } from "../components/quizdetail/QuizMaterials";
 import { QuizInfo } from "../components/quizdetail/QuizInfo";
 import { ActionButton } from "../components/quizdetail/ActionButton";
 import { AttemptDetailModal } from "../components/quizdetail/AttemptDetailModal";
-import { useMaterials } from "../hooks/useMaterials";
+import { useQuizMaterials } from "../hooks/useMaterials";
 import { useCreateQuizAttempt } from "../hooks/useCreateQuizAttempt";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 
@@ -28,7 +28,7 @@ export const QuizDetailPage = () => {
   const { data: quiz } = useQuiz(quizId);
   const { data: attempts = [], refetch: refetchAttempts } =
     useQuizAttempts(quizId);
-  const { data: materials = [] } = useMaterials();
+  const { data: quizMaterials = [] } = useQuizMaterials(quizId);
   const { user } = useAuth();
   const userId = user?.id;
   const { mutate: createAttempt } = useCreateQuizAttempt(quizId, userId || "");
@@ -71,10 +71,6 @@ export const QuizDetailPage = () => {
 
   if (!quiz) return null; // Loading or error handling
 
-  const filteredMaterials = materials.filter(
-    (m) => m.subject_id === quiz.subject_id
-  );
-
   const bestScore =
     attempts.length > 0 ? Math.max(...attempts.map((a) => a.score)) : 0;
   const averageScore =
@@ -108,7 +104,7 @@ export const QuizDetailPage = () => {
               />
             </div>
             <div className="space-y-6">
-              <QuizMaterials materials={filteredMaterials} />
+              <QuizMaterials materials={quizMaterials} />
               <QuizInfo quiz={quiz} />
               <ActionButton attempts={attempts} onStart={handleStartQuiz} />
             </div>

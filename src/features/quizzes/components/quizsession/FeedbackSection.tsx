@@ -8,7 +8,8 @@ import {
   Star,
 } from "lucide-react";
 import type { QuestionResult, Question } from "../../types/quiz";
-import type { GradingResult } from "../../services/aiGradingService";
+import type { GradingResult } from "../../services/types";
+import { getCorrectAnswerText } from "../../utils/answerValidation";
 
 interface FeedbackSectionProps {
   hasSubmitted: boolean;
@@ -181,7 +182,7 @@ export const FeedbackSection: React.FC<FeedbackSectionProps> = ({
             <p className="text-sm font-semibold text-slate-700 mb-2">
               Correct answer:{" "}
               <span className="text-emerald-700">
-                {currentQuestion.correct_answer}
+                {getCorrectAnswerText(currentQuestion)}
               </span>
             </p>
           )}

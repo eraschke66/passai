@@ -3,7 +3,7 @@
  * React Query hook for creating a new quiz attempt.
  */
 import { useMutation } from "@tanstack/react-query";
-import { createQuizAttempt } from "../services/quizzesService";
+import { createQuizAttempt } from "../services/quizAttemptService";
 import type { QuizAttempt } from "../types/quiz";
 
 export const useCreateQuizAttempt = (quizId: string, userId: string) => {

@@ -1,6 +1,7 @@
 /**
  * Material Upload Hook
- * Orchestrates the complete upload process: validation → storage → extraction → database
+ * Orchestrates the complete upload process: validation → storage → backend processing
+ * Uses Supabase Realtime for status updates (no polling!)
  */
 
 import { useCallback, useState } from "react";
@@ -10,16 +11,18 @@ import { uploadFile } from "../services/storageService";
 import {
   createMaterial,
   getUserStorageUsage,
-  updateMaterialStatus,
-  updateMaterialTextContent,
 } from "../services/materialService";
-import { extractText } from "../utils/extractors";
 import { ProcessingStatus } from "../types/material.types";
+import { processMaterial } from "@/lib/api/materialProcessing";
 import {
   generateUniqueFileName,
   sanitizeFileName,
 } from "../services/storageService";
 import { ERROR_MESSAGES } from "../types/constants";
+import {
+  type MaterialStatusUpdate,
+  useMaterialRealtime,
+} from "./useMaterialRealtime";
 import type {
   BatchUploadResult,
   UploadProgress,
@@ -37,6 +40,57 @@ export function useMaterialUpload() {
   const [isUploading, setIsUploading] = useState(false);
 
   /**
+   * Handle material status updates from Realtime subscription
+   */
+  const handleStatusUpdate = useCallback((update: MaterialStatusUpdate) => {
+    console.log("📨 Material status update received:", update);
+
+    setUploadProgress((prev) => {
+      const newMap = new Map(prev);
+
+      // Find the upload progress entry by materialId
+      for (const [fileId, progressItem] of newMap.entries()) {
+        if (progressItem.materialId === update.materialId) {
+          const updatedProgress: UploadProgress = { ...progressItem };
+
+          // Update based on status
+          switch (update.status) {
+            case ProcessingStatus.PROCESSING:
+              updatedProgress.status = "processing";
+              updatedProgress.progress = 90;
+              break;
+
+            case ProcessingStatus.READY:
+              updatedProgress.status = "complete";
+              updatedProgress.progress = 100;
+              updatedProgress.error = undefined;
+              break;
+
+            case ProcessingStatus.FAILED:
+              updatedProgress.status = "failed";
+              updatedProgress.progress = 100;
+              updatedProgress.error =
+                update.errorMessage || "Processing failed";
+              break;
+
+            default:
+              break;
+          }
+
+          newMap.set(fileId, updatedProgress);
+          console.log(`✅ Updated progress for ${fileId}:`, updatedProgress);
+          break;
+        }
+      }
+
+      return newMap;
+    });
+  }, []);
+
+  // Subscribe to material status changes via Realtime
+  useMaterialRealtime(handleStatusUpdate);
+
+  /**
    * Updates progress for a specific file
    */
   const updateProgress = useCallback(
@@ -50,11 +104,12 @@ export function useMaterialUpload() {
         return newMap;
       });
     },
-    [],
+    []
   );
 
   /**
-   * Uploads a single file with text extraction
+   * Uploads a single file and initiates Edge Function processing
+   * Realtime subscriptions will handle status updates automatically
    */
   const uploadSingleFile = useCallback(
     async (file: File, subjectId: string): Promise<UploadResult> => {
@@ -92,14 +147,14 @@ export function useMaterialUpload() {
         const sanitized = sanitizeFileName(file.name);
         const uniqueFileName = generateUniqueFileName(sanitized);
 
-        // Upload to storage
+        // Upload to storage (30-80% progress)
         updateProgress(fileId, { status: "uploading", progress: 30 });
         const uploadResult = await uploadFile({
           userId: user.id,
           subjectId,
           file: new File([file], uniqueFileName, { type: file.type }),
           onProgress: (progress) =>
-            updateProgress(fileId, { progress: 30 + progress * 0.4 }), // 30-70%
+            updateProgress(fileId, { progress: 30 + progress * 0.5 }), // 30-80%
         });
 
         if (!uploadResult.success || !uploadResult.storagePath) {
@@ -114,8 +169,8 @@ export function useMaterialUpload() {
           };
         }
 
-        // Create database record
-        updateProgress(fileId, { status: "processing", progress: 70 });
+        // Create database record with PROCESSING status (80-90% progress)
+        updateProgress(fileId, { status: "uploading", progress: 80 });
         const material = await createMaterial({
           subject_id: subjectId,
           user_id: user.id,
@@ -124,6 +179,7 @@ export function useMaterialUpload() {
           file_size: file.size,
           storage_path: uploadResult.storagePath,
           processing_status: ProcessingStatus.PROCESSING,
+          text_content: null,
         });
 
         if (!material) {
@@ -138,71 +194,41 @@ export function useMaterialUpload() {
           };
         }
 
-        // Extract text
-        updateProgress(fileId, { progress: 80 });
-        const extractionResult = await extractText(
-          file,
-          materialType,
-          (ocrProgress) => {
-            updateProgress(fileId, { progress: 80 + ocrProgress * 0.15 }); // 80-95%
-          },
+        updateProgress(fileId, {
+          status: "uploading",
+          progress: 90,
+          materialId: material.id,
+        });
+
+        // Call backend API to process material (async - don't block)
+        // Realtime subscription will notify us of status changes
+        processMaterial(material.id, uploadResult.storagePath).catch(
+          (error) => {
+            console.error("Failed to call backend API:", error);
+            // Update progress to show error
+            updateProgress(fileId, {
+              status: "failed",
+              error:
+                error instanceof Error ? error.message : "Processing failed",
+            });
+          }
         );
 
-        if (!extractionResult.success || !extractionResult.text) {
-          // Mark as failed in database
-          await updateMaterialStatus(
-            material.id,
-            ProcessingStatus.FAILED,
-            extractionResult.error || "Text extraction failed",
-          );
-          updateProgress(fileId, {
-            status: "failed",
-            progress: 100,
-            error: extractionResult.error,
-          });
-          return {
-            success: false,
-            fileName: file.name,
-            materialId: material.id,
-            error: extractionResult.error,
-          };
-        }
-
-        // Update with extracted text
-        updateProgress(fileId, { progress: 95 });
-        const updateSuccess = await updateMaterialTextContent(
-          material.id,
-          extractionResult.text,
-        );
-
-        if (!updateSuccess) {
-          updateProgress(fileId, {
-            status: "failed",
-            error: "Failed to save extracted text",
-          });
-          return {
-            success: false,
-            fileName: file.name,
-            materialId: material.id,
-            error: "Failed to save extracted text",
-          };
-        }
-
-        // Success!
+        // Upload complete - mark as 100% (processing will be tracked via Realtime)
         updateProgress(fileId, {
           status: "complete",
           progress: 100,
           materialId: material.id,
         });
+
         return {
           success: true,
           fileName: file.name,
           materialId: material.id,
         };
       } catch (error) {
-        const errorMessage = error instanceof Error
-          ? error.message
-          : "Unknown error";
+        const errorMessage =
+          error instanceof Error ? error.message : "Unknown error";
         updateProgress(fileId, { status: "failed", error: errorMessage });
         return {
           success: false,
@@ -211,7 +237,7 @@ export function useMaterialUpload() {
         };
       }
     },
-    [user?.id, updateProgress],
+    [user?.id, updateProgress]
   );
 
   /**
@@ -240,7 +266,7 @@ export function useMaterialUpload() {
         const validation = validateFiles(
           files,
           storageUsage.used,
-          storageUsage.limit,
+          storageUsage.limit
         );
 
         // Handle batch errors
@@ -291,7 +317,7 @@ export function useMaterialUpload() {
         setIsUploading(false);
       }
     },
-    [user?.id, uploadSingleFile],
+    [user?.id, uploadSingleFile]
   );
 
   /**
@@ -308,7 +334,7 @@ export function useMaterialUpload() {
     async (file: File, subjectId: string): Promise<UploadResult> => {
       return uploadSingleFile(file, subjectId);
     },
-    [uploadSingleFile],
+    [uploadSingleFile]
   );
 
   return {

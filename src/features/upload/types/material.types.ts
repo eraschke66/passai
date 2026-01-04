@@ -142,6 +142,7 @@ export interface UploadResult {
   fileName: string;
   materialId?: string;
   error?: string;
+  warning?: string;
 }
 
 /**

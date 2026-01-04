@@ -1,5 +1,5 @@
 import type { Question } from "../types/quiz";
-import type { GradingResult } from "../services/aiGradingService"; // Type-only import
+import type { GradingResult } from "../services/types";
 import { supabase } from "@/lib/supabase/client";
 
 export interface ValidationResult {
@@ -46,6 +46,14 @@ export const isAnswerCorrect = (
 
     case "short-answer": {
       // Direct string comparison (case-insensitive, trimmed)
+      return (
+        userAnswer.trim().toLowerCase() === correctAnswer.trim().toLowerCase()
+      );
+    }
+
+    case "fill-in-blank": {
+      // For fill-in-blank, check if answer matches (case-insensitive, trimmed)
+      // Could also check for partial matches or synonyms in the future
       return (
         userAnswer.trim().toLowerCase() === correctAnswer.trim().toLowerCase()
       );
@@ -109,29 +117,34 @@ export const validateAnswer = async (
     };
   }
 
-  // AI grading for short answer and essay
-  if (questionType === "short-answer" || questionType === "essay") {
+  // AI grading for short answer, essay, and fill-in-blank
+  if (
+    questionType === "short-answer" ||
+    questionType === "essay" ||
+    questionType === "fill-in-blank"
+  ) {
     try {
       console.log("🎓 Calling grade-response Edge Function...");
 
       const { data: gradingResult, error: gradingError } = await supabase
-        .functions.invoke(
-          "grade-response",
-          {
-            body: {
-              questionId: question.id,
-              questionType: questionType === "essay" ? "essay" : "short-answer",
-              question: question.question,
-              modelAnswer: question.correct_answer,
-              studentAnswer: userAnswer,
-              rubric: rubric,
-              context: {
-                topic: question.topic || undefined,
-                difficulty: question.difficulty || undefined,
-              },
+        .functions.invoke("grade-response", {
+          body: {
+            questionId: question.id,
+            questionType: questionType === "essay"
+              ? "essay"
+              : questionType === "fill-in-blank"
+              ? "short-answer"
+              : "short-answer",
+            question: question.question,
+            modelAnswer: question.correct_answer,
+            studentAnswer: userAnswer,
+            rubric: rubric,
+            context: {
+              topic: question.topic || undefined,
+              difficulty: question.difficulty || undefined,
             },
           },
-        );
+        });
 
       if (gradingError) {
         console.error("❌ Grading Edge Function error:", gradingError);

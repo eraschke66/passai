@@ -25,7 +25,7 @@ import {
   validateAnswer,
   requiresAIGrading,
 } from "../../utils/answerValidation";
-import type { GradingResult } from "../../services/aiGradingService";
+import type { GradingResult } from "../../services/types";
 
 interface QuizSessionProps {
   quizId: string;

@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { saveUserAnswer } from "../services/quizzesService";
+import { saveUserAnswer } from "../services/quizAttemptService";
 
 interface SaveAnswerParams {
   attemptId: string;
@@ -21,7 +21,7 @@ export const useSaveUserAnswer = () => {
         params.userAnswer,
         params.isCorrect,
         params.timeSpent,
-        params.currentQuestionIndex
+        params.currentQuestionIndex,
       ),
     onSuccess: () => {
       // Invalidate relevant queries

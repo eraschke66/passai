@@ -9,7 +9,6 @@ import { MaterialSelection } from "./MaterialSelection";
 import { QuizConfiguration } from "./QuizConfiguration";
 import { GeneratingProgress } from "./GeneratingProgress";
 import { ScheduleOptions } from "./ScheduleOptions";
-import { useAuth } from "@/features/auth/hooks/useAuth";
 import { toast } from "sonner";
 
 interface CreateQuizFlowProps {
@@ -23,11 +22,7 @@ export const CreateQuizFlow: React.FC<CreateQuizFlowProps> = ({
   onQuizCreated,
   preSelectedSubject,
 }) => {
-  const { user } = useAuth();
-  const userId = user?.id;
-  const { mutate: createNewQuiz, isPending: isGenerating } = useCreateQuiz(
-    userId || ""
-  );
+  const { mutate: createNewQuiz, isPending: isGenerating } = useCreateQuiz();
 
   const { data: subjects = [] } = useSubjects();
   const { data: materials = [] } = useMaterials();
@@ -56,8 +51,9 @@ export const CreateQuizFlow: React.FC<CreateQuizFlowProps> = ({
     questionTypes: {
       multipleChoice: true,
       trueFalse: true,
-      shortAnswer: false,
-      matching: false,
+      shortAnswer: true,
+      essay: false,
+      fillInBlank: true,
     },
     cognitiveMix: { recall: 30, understanding: 50, application: 20 },
     focusAreas: "",
@@ -89,7 +85,7 @@ export const CreateQuizFlow: React.FC<CreateQuizFlowProps> = ({
   const deselectAllMaterials = () => setSelectedMaterials([]);
 
   const handleGenerateQuiz = () => {
-    if (!selectedSubject || !userId) return;
+    if (!selectedSubject) return;
     setStep("generating");
     createNewQuiz(
       {
@@ -101,12 +97,15 @@ export const CreateQuizFlow: React.FC<CreateQuizFlowProps> = ({
         onSuccess: ({ quizId }) => {
           setCreatedQuizId(quizId);
           setStep("schedule");
-          console.log("Quiz created with ID:", quizId);
+          console.log("✅ Quiz created successfully with ID:", quizId);
         },
         onError: (error) => {
-          console.error("Generation failed:", error);
-          toast.error("Failed to generate quiz. Please try again.");
-          // TODO: Optionally revert to configure
+          console.error("❌ Quiz generation failed:", error);
+          toast.error(
+            error instanceof Error
+              ? error.message
+              : "Failed to generate quiz. Please try again."
+          );
           setStep("configure");
         },
       }

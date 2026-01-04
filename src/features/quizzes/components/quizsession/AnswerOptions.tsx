@@ -16,10 +16,11 @@ export const AnswerOptions: React.FC<AnswerOptionsProps> = ({
   hasSubmitted,
   setSelectedAnswer,
 }) => {
-  // For short answer and essay questions, show text input
+  // For short answer, essay, and fill-in-blank questions, show text input
   if (
     currentQuestion.type === "short-answer" ||
-    currentQuestion.type === "essay"
+    currentQuestion.type === "essay" ||
+    currentQuestion.type === "fill-in-blank"
   ) {
     return (
       <TextAnswerInput

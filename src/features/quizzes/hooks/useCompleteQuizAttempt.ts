@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { completeQuizAttempt } from "../services/quizzesService";
+import { completeQuizAttempt } from "../services/quizCompletionService";
 
 interface CompleteAttemptParams {
   attemptId: string;
@@ -19,7 +19,7 @@ export const useCompleteQuizAttempt = () => {
         params.score,
         params.correctAnswers,
         params.totalTimeSpent,
-        params.mood
+        params.mood,
       ),
     onSuccess: () => {
       // Invalidate queries

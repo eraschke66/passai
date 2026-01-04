@@ -61,7 +61,8 @@ export type QuizSettings = {
     multipleChoice: boolean;
     trueFalse: boolean;
     shortAnswer: boolean;
-    matching: boolean;
+    essay: boolean;
+    fillInBlank: boolean;
   };
   cognitiveMix: CognitiveMix;
   focusAreas: string;
@@ -78,15 +79,29 @@ export type GenerationStep =
 // Previous types...
 export type Question = Database["public"]["Tables"]["questions"]["Row"];
 
+// Extended Question type with additional fields
+export type QuestionWithHint = Question & {
+  bloom_level?:
+    | "remember"
+    | "understand"
+    | "apply"
+    | "analyze"
+    | "evaluate"
+    | "create";
+  hint?: string;
+};
+
 // export type Question = {
 //   id: string;
 //   question: string;
-//   type: "multiple-choice" | "true-false" | "short-answer" | "matching";
+//   type: "multiple-choice" | "true-false" | "short-answer" | "essay" | "fill-in-blank";
 //   options?: string[];
 //   correctAnswer: string;
 //   explanation: string;
 //   topic: string;
 //   difficulty: "easy" | "medium" | "hard";
+//   bloom_level?: "remember" | "understand" | "apply" | "analyze" | "evaluate" | "create";
+//   hint?: string;
 //   sourceSnippet: {
 //     material: string;
 //     page: number;

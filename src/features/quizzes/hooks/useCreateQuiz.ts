@@ -1,9 +1,18 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { generateAndCreateQuiz } from "../services/quizzesService";
+import { generateQuiz } from "../services/quizGenerationService";
 import type { QuizSettings } from "../types/quiz";
 
-export const useCreateQuiz = (userId: string) => {
+/**
+ * Hook for creating a new quiz via AI generation
+ *
+ * The Edge Function authenticates the user automatically via the auth token,
+ * so no userId parameter is needed.
+ *
+ * @returns Mutation hook with quiz generation function
+ */
+export const useCreateQuiz = () => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: ({
       subjectId,
@@ -13,9 +22,11 @@ export const useCreateQuiz = (userId: string) => {
       subjectId: string;
       settings: QuizSettings;
       materialIds: string[];
-    }) => generateAndCreateQuiz(userId, subjectId, settings, materialIds),
+    }) => generateQuiz(subjectId, materialIds, settings),
     onSuccess: () => {
+      // Invalidate quiz list to show the new quiz
       queryClient.invalidateQueries({ queryKey: ["quizzes"] });
+      // Invalidate questions cache in case it's being used elsewhere
       queryClient.invalidateQueries({ queryKey: ["questions"] });
     },
   });

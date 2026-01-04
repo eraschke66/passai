@@ -1,53 +1,181 @@
-# React + TypeScript + Vite
+# PassAI Frontend - React Study Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Modern React + TypeScript frontend for the PassAI adaptive learning platform.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 📋 Overview
 
-## React Compiler
+Interactive web application for students to upload study materials, take AI-generated quizzes, and track learning progress with adaptive difficulty using Bayesian Knowledge Tracing.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## ✨ Features
 
-## Expanding the ESLint configuration
+- **🔐 Authentication**: Supabase Auth with email/password
+- **📚 Material Upload**: Multi-format support (PDF, DOCX, PPTX, Images)
+- **🧠 Adaptive Quizzes**: AI-powered question generation with BKT
+- **📊 Progress Tracking**: Real-time mastery level monitoring
+- **👨‍🏫 Teacher Dashboard**: Class management and analytics
+- **🎨 Modern UI**: TailwindCSS + shadcn/ui components
+- **⚡ Real-time Updates**: Supabase Realtime subscriptions
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 🛠️ Setup
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Prerequisites
+- **Node.js** 18+
+- **npm** or **yarn**
+- **Supabase** account
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Installation
+
+1. **Navigate to frontend**
+```bash
+cd passai-study
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+2. **Install dependencies**
+```bash
+npm install
+```
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
+3. **Configure environment**
+
+Create `.env` file:
+```env
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+VITE_BACKEND_URL=http://localhost:8000
+```
+
+4. **Run database migrations**
+```bash
+npx supabase db push
+```
+
+5. **Start development server**
+```bash
+npm run dev
+```
+
+Visit: `http://localhost:5173`
+
+---
+
+## 📁 Project Structure
+
+```
+src/
+├── components/          # Reusable UI components
+│   ├── ui/             # shadcn/ui primitives
+│   └── layout/         # Layout components
+├── features/           # Feature modules
+│   ├── auth/           # Authentication
+│   ├── subjects/       # Subject management
+│   ├── upload/         # Material upload
+│   ├── quiz/           # Quiz generation & taking
+│   ├── bkt/            # Bayesian Knowledge Tracing
+│   └── dashboard/      # Teacher dashboard
+├── pages/              # Route pages
+├── lib/                # Utilities
+│   ├── api/            # API clients
+│   └── supabase/       # Supabase client config
+├── types/              # TypeScript types
+└── hooks/              # Custom React hooks
+```
+
+---
+
+## 🚀 Build & Deploy
+
+### Development
+```bash
+npm run dev
+```
+
+### Production Build
+```bash
+npm run build
+```
+
+### Preview Production Build
+```bash
+npm run preview
+```
+
+### Deploy to Vercel
+```bash
+vercel --prod
+```
+
+---
+
+## 📦 Tech Stack
+
+- **React** 18 - UI library
+- **TypeScript** - Type safety
+- **Vite** - Fast build tool
+- **TailwindCSS** - Utility-first CSS
+- **shadcn/ui** - Component library
+- **Supabase** - Backend (Auth, DB, Storage, Realtime)
+- **React Query** - Data fetching
+- **React Router** - Navigation
+- **Zustand** - State management
+
+---
+
+## 🗄️ Database Schema
+
+See [supabase/migrations/](./supabase/migrations/) for complete schema.
+
+Key tables:
+- `profiles` - User profiles
+- `subjects` - Study subjects
+- `study_materials` - Uploaded materials
+- `study_plans` - Learning plans
+- `quiz_questions` - Generated questions
+- `quiz_attempts` - Student responses
+- `bkt_parameters` - Knowledge tracking
+
+---
+
+## 🔒 Security
+
+- **Row Level Security (RLS)**: All tables protected
+- **JWT Authentication**: Supabase token-based auth
+- **Environment Variables**: Sensitive data excluded
+- **Secure Storage**: Files stored in Supabase Storage with access controls
+
+---
+
+## 🧪 Testing
+
+Run tests:
+```bash
+npm run test
+```
+
+Run linter:
+```bash
+npm run lint
+```
+
+Format code:
+```bash
+npm run format
+```
+
+---
+
+## 📚 Related Documentation
+
+- [Main Project README](../README.md)
+- [Backend API](../passai-backend/README.md)
+- [Database Migrations](./supabase/migrations/)
+
+---
+
+**Built with ⚡ Vite + React**
 import reactDom from 'eslint-plugin-react-dom'
 
 export default defineConfig([

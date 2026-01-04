@@ -1,3 +1,10 @@
+# Development documentation (private)
+../docs/
+*.local.md
+dev_md/
+work_md/
+completed_md/
+
 # Logs
 logs
 *.log
@@ -140,8 +147,4 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
 
-# supabase/
-complete_md/
-md/
-
-work_md/
+.vscode

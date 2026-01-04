@@ -1,7 +1,7 @@
 import React from "react";
 
 interface TextAnswerInputProps {
-  questionType: "short-answer" | "essay";
+  questionType: "short-answer" | "essay" | "fill-in-blank";
   value: string;
   onChange: (value: string) => void;
   disabled?: boolean;
@@ -15,6 +15,37 @@ export const TextAnswerInput: React.FC<TextAnswerInputProps> = ({
   disabled = false,
   placeholder,
 }) => {
+  // Fill-in-blank uses single line input
+  if (questionType === "fill-in-blank") {
+    return (
+      <div className="mb-6">
+        <input
+          type="text"
+          value={value}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            onChange(e.target.value)
+          }
+          disabled={disabled}
+          placeholder={placeholder || "Type the missing word(s)..."}
+          className={`w-full px-4 py-3 rounded-xl border-2 font-medium transition-all ${
+            disabled
+              ? "bg-slate-50 border-slate-200 text-slate-700 cursor-not-allowed"
+              : "bg-white border-slate-300 hover:border-blue-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+          }`}
+        />
+        <div className="flex items-center justify-between mt-2 px-1">
+          <p className="text-xs text-slate-500">
+            🌺 Fill in the blank with the correct term
+          </p>
+          <p className="text-xs text-slate-400">
+            {value.length} character{value.length !== 1 ? "s" : ""}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Essay and short-answer use textarea
   const rows = questionType === "essay" ? 8 : 3;
   const defaultPlaceholder =
     questionType === "essay"
