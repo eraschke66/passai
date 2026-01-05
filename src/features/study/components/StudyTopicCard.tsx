@@ -44,13 +44,26 @@ const TaskTypeIcon: React.FC<{ type: StudyPlanTask["task_type"] }> = ({
 const getPriorityColor = (priority: string): string => {
   switch (priority) {
     case "high":
-      return "text-red-600 bg-red-50 border-red-200";
+      return "text-green-700 bg-green-50 border-green-200";
     case "medium":
-      return "text-amber-600 bg-amber-50 border-amber-200";
+      return "text-emerald-700 bg-emerald-50 border-emerald-200";
     case "low":
-      return "text-blue-600 bg-blue-50 border-blue-200";
+      return "text-teal-700 bg-teal-50 border-teal-200";
     default:
       return "text-slate-600 bg-slate-50 border-slate-200";
+  }
+};
+
+const getPriorityLabel = (priority: string): string => {
+  switch (priority) {
+    case "high":
+      return "🌱 Needs water";
+    case "medium":
+      return "🌿 Growing";
+    case "low":
+      return "🌻 Blooming";
+    default:
+      return priority;
   }
 };
 
@@ -100,7 +113,7 @@ export const StudyTopicCard: React.FC<StudyTopicCardProps> = ({
                     topic.priority
                   )} whitespace-nowrap`}
                 >
-                  {topic.priority}
+                  {getPriorityLabel(topic.priority)}
                 </span>
               </div>
 
@@ -171,7 +184,7 @@ export const StudyTopicCard: React.FC<StudyTopicCardProps> = ({
                         topic.priority
                       )}`}
                     >
-                      {topic.priority}
+                      {getPriorityLabel(topic.priority)}
                     </span>
                   </div>
                   {topic.description && (

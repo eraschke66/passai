@@ -13,3 +13,17 @@
 // Will be deleted after full verification of Edge Functions.
 //
 // If you see imports of this file, they should be removed or updated to use Edge Functions.
+
+// Stub export to prevent build errors in deprecated files that still import this
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const openai: any = {
+    chat: {
+        completions: {
+            create: () => {
+                throw new Error(
+                    "OpenAI client is deprecated. Use Edge Functions instead.",
+                );
+            },
+        },
+    },
+};

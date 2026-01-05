@@ -3,6 +3,9 @@ import type { Tables } from "@/lib/supabase/types";
 // Supabase table types
 export type Subject = Tables<"subjects">;
 
+// Garden stage types for study plan metaphor
+export type GardenStage = "🌱" | "🌿" | "🌻" | "🌳";
+
 // Study Plan Types
 export type StudyPlanTopic = {
   id: string;
@@ -16,6 +19,10 @@ export type StudyPlanTopic = {
   total_time_minutes: number;
   mastery_level: number | null;
   tasks: StudyPlanTask[];
+  // Garden metaphor metadata (optional, for enhanced UI)
+  gardenStage?: GardenStage;
+  timeToNextStage?: number;
+  encouragement?: string;
 };
 
 export type StudyPlanTask = {
@@ -29,6 +36,8 @@ export type StudyPlanTask = {
   is_completed: boolean;
   completed_at: string | null;
   resource_links: string[] | null;
+  // Garden metaphor metadata (optional)
+  outcome?: string; // e.g., "Grows your seedling to 🌿"
 };
 
 export type StudyPlan = {
@@ -42,6 +51,9 @@ export type StudyPlan = {
   projected_pass_chance: number | null;
   status: "active" | "completed" | "paused";
   topics: StudyPlanTopic[];
+  // Garden metaphor metadata (optional)
+  gardenHealth?: number; // Overall mastery percentage
+  encouragement?: string; // Warm, encouraging message
 };
 
 // UI State Types

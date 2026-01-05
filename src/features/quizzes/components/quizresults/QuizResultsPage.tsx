@@ -5,8 +5,10 @@ import type { QuestionResult, Question } from "../../types/quiz";
 import { ScoreCard } from "./ScoreCard";
 import { QuickStatsGrid } from "./QuickStatsGrid";
 import { GardenTeaser } from "./GardenTeaser";
+import { GardenGrowthCelebration } from "./GardenGrowthCelebration";
 import { QuestionReviewList } from "../quizsession/QuestionReviewList";
 import { useGardenUpdate } from "../../hooks/useGardenUpdate";
+import { useMasteryGrowth } from "../../hooks/useMasteryGrowth";
 import { calculateProgressToNextLevel } from "../../services/plantStateService";
 
 interface QuizResultsPageProps {
@@ -16,6 +18,7 @@ interface QuizResultsPageProps {
   subjectColor: string;
   results: QuestionResult[];
   questions: Question[];
+  quizAttemptId?: string; // Add optional quizAttemptId for mastery tracking
   onExit?: () => void;
 }
 
@@ -45,6 +48,17 @@ export const QuizResultsPage: React.FC<QuizResultsPageProps> = (props) => {
     totalQuestions,
     enabled: true,
   });
+
+  // Track mastery growth for celebration
+  const {
+    topicGrowths,
+    isLoading: growthLoading,
+    hasGrowth,
+  } = useMasteryGrowth(
+    props.subjectId,
+    props.quizAttemptId || null,
+    !!props.quizAttemptId
+  );
 
   // Calculate progress to next level (0-100)
   const progressToNextLevel = plantState
@@ -152,6 +166,14 @@ export const QuizResultsPage: React.FC<QuizResultsPageProps> = (props) => {
             </p>
           </div>
         </div>
+        {/* Show garden growth celebration if topics improved */}
+        {!growthLoading && hasGrowth && (
+          <GardenGrowthCelebration
+            topicGrowths={topicGrowths}
+            overallScore={score}
+            subjectName={props.subject}
+          />
+        )}
         {/* Show garden teaser only if plant state loaded */}
         {plantState && !gardenLoading && (
           <GardenTeaser

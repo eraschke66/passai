@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Header from "./components/Header";
 import AnimatedGradientHero from "./components/AnimatedGradientHero";
 import PassProbabilityFeatureCard from "./components/PassProbabilityFeatureCard";
@@ -13,14 +13,28 @@ import TermsOfService from "./components/TermsOfService";
 import PrivacyPolicy from "./components/PrivacyPolicy";
 import CopyrightSection from "./components/CopyrightSection";
 import Footer from "./components/Footer";
+import { useEffect } from "react";
 
 export default function LandingPage() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const scrollToId = (id: string) => {
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const scrollTo = params.get("scrollTo");
+    if (scrollTo) {
+      setTimeout(() => {
+        scrollToId(scrollTo);
+        // Clean up URL
+        window.history.replaceState({}, "", "/");
+      }, 100);
+    }
+  }, [location]);
 
   const handleGetStarted = () => navigate("/login");
 
@@ -59,10 +73,10 @@ export default function LandingPage() {
       {/* FAQ Section */}
       <FAQSection />
 
-      {/* Terms of Service Section */}
+      {/* TODO: Remove this section after verifying the new /terms page matches all requirements. Kept for beta. */}
       <TermsOfService />
 
-      {/* Privacy Policy Section */}
+      {/* TODO: Remove this section after verifying the new /privacy page matches all requirements. Kept for beta. */}
       <PrivacyPolicy />
 
       {/* Copyright & Legal Architecture Section */}

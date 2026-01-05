@@ -58,18 +58,18 @@ export function PassProbabilityCard({
 
   const getMessage = (prob: number) => {
     if (prob >= 80)
-      return "You're on track for success! Keep up the excellent work.";
+      return "Your garden is thriving! You're on track for success. 🌳";
     if (prob >= 70)
-      return "You're doing well! Continue practicing to solidify your knowledge.";
+      return "Your garden is blooming beautifully! Keep watering to stay strong. 🌻";
     if (prob >= 60)
-      return "You're making progress. Focus on your weak areas to improve.";
+      return "Your plants are growing well. Water your seedlings to help them bloom. 🌿";
     if (prob >= 50)
-      return "Keep studying! A bit more practice will help significantly.";
+      return "Your garden is taking root! Regular care will help it flourish. 🌱";
     if (prob >= 40)
-      return "Focus on understanding key concepts. Regular practice is essential.";
+      return "Your seedlings are sprouting. Give them daily water to grow strong. 🌱";
     if (prob > 0)
-      return "Concentrate on building a strong foundation. More study time needed.";
-    return "Start practicing to track your progress and improve your chances.";
+      return "Time to plant your garden! Start with the basics and water regularly. 🌱";
+    return "Ready to start your garden? Complete a quiz to see your first sprouts. 🌱";
   };
 
   const status = getStatus(probability);

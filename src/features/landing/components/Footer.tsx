@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function Footer({
   scrollToId,
 }: {
@@ -208,20 +210,20 @@ export default function Footer({
             <h4 className="font-semibold mb-4">Legal</h4>
             <ul className="space-y-2 text-sm text-muted-foreground">
               <li>
-                <button
-                  onClick={() => scrollToId("terms")}
+                <Link
+                  to="/terms"
                   className="hover:text-primary transition-colors"
                 >
                   Terms of Service
-                </button>
+                </Link>
               </li>
               <li>
-                <button
-                  onClick={() => scrollToId("privacy")}
+                <Link
+                  to="/privacy"
                   className="hover:text-primary transition-colors"
                 >
                   Privacy Policy
-                </button>
+                </Link>
               </li>
               <li>
                 <button

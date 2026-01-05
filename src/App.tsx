@@ -18,6 +18,9 @@ import { QuizzesPage } from "./features/quizzes/pages/QuizzesPage";
 import { QuizDetailPage } from "./features/quizzes/pages/QuizDetailPage";
 import { QuizSessionPage } from "./features/quizzes/pages/QuizSessionPage";
 import { StudyPlanPage } from "./features/study/pages/StudyPlanPage";
+import TermsOfServicePage from "./features/legal/pages/TermsOfServicePage";
+import PrivacyPolicyPage from "./features/legal/pages/PrivacyPolicyPage";
+import CookieConsent from "./features/legal/components/CookieConsent";
 
 // Create a Query Client for React Query
 const queryClient = new QueryClient({
@@ -35,6 +38,7 @@ function App() {
       <AuthProvider>
         <BrowserRouter>
           <Toaster />
+          <CookieConsent />
           <Routes>
             {/* Public Routes - redirect to dashboard if authenticated */}
             <Route element={<PublicRoute />}>
@@ -42,6 +46,8 @@ function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignUpPage />} />
               <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+              <Route path="/terms" element={<TermsOfServicePage />} />
+              <Route path="/privacy" element={<PrivacyPolicyPage />} />
             </Route>
 
             {/* Password reset can be accessed by anyone with the token */}

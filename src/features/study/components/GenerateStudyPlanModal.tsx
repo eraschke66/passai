@@ -50,7 +50,7 @@ export const GenerateStudyPlanModal: React.FC<GenerateStudyPlanModalProps> = ({
           <div className="flex items-start justify-between">
             <div>
               <h2 className="text-xl lg:text-2xl font-bold text-slate-900 mb-1">
-                Generate Study Plan
+                Grow Your Learning Garden 🌱
               </h2>
               <p className="text-sm text-slate-600">For {subjectName}</p>
             </div>
@@ -117,9 +117,9 @@ export const GenerateStudyPlanModal: React.FC<GenerateStudyPlanModalProps> = ({
           {isTestDateInPast && (
             <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
               <p className="text-sm text-amber-800 leading-relaxed">
-                <strong>⚠️ Cannot Generate Plan:</strong> The test date has
+                <strong>⚠️ Cannot Start Garden:</strong> The test date has
                 already passed. Please update the test date to a future date
-                before generating a study plan.
+                before growing your garden.
               </p>
             </div>
           )}
@@ -128,13 +128,13 @@ export const GenerateStudyPlanModal: React.FC<GenerateStudyPlanModalProps> = ({
           <div className="mb-6">
             <label className="block text-sm font-semibold text-slate-900 mb-2">
               <div className="flex items-center gap-2 mb-1">
-                <Clock className="w-4 h-4 text-slate-600" />
-                <span>Available Study Time Per Week</span>
+                <Clock className="w-4 h-4 text-green-600" />
+                <span>Garden Care Time Per Week</span>
               </div>
             </label>
             <p className="text-xs text-slate-600 mb-3">
-              How many hours per week can you dedicate to studying {subjectName}
-              ?
+              How many hours per week can you water and tend your {subjectName}{" "}
+              garden?
             </p>
             <div className="flex items-center gap-4">
               <input
@@ -162,19 +162,19 @@ export const GenerateStudyPlanModal: React.FC<GenerateStudyPlanModalProps> = ({
           </div>
 
           {/* Summary */}
-          <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
+          <div className="p-4 bg-green-50 rounded-lg border border-green-200">
             <h3 className="font-semibold text-slate-900 text-sm mb-3">
-              Plan Summary
+              🌿 Garden Care Plan
             </h3>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-slate-600">Weekly commitment:</span>
+                <span className="text-slate-600">Weekly watering time:</span>
                 <span className="font-semibold text-slate-900">
                   {availableHoursPerWeek} hours
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-600">Total study time:</span>
+                <span className="text-slate-600">Total care time:</span>
                 <span className="font-semibold text-slate-900">
                   ~{totalStudyHours} hours
                 </span>
@@ -191,11 +191,11 @@ export const GenerateStudyPlanModal: React.FC<GenerateStudyPlanModalProps> = ({
           </div>
 
           {/* Info Note */}
-          <div className="mt-4 p-3 bg-purple-50 border border-purple-200 rounded-lg">
-            <p className="text-xs text-purple-800 leading-relaxed">
-              <strong>Note:</strong> Your study plan will be personalized based
-              on your quiz performance, focusing on areas where you need the
-              most improvement.
+          <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+            <p className="text-xs text-green-800 leading-relaxed">
+              <strong>🌱 Note:</strong> Your garden will be personalized based
+              on your quiz performance. We'll focus on seedlings that need the
+              most water to help them grow strong.
             </p>
           </div>
         </div>
@@ -215,9 +215,7 @@ export const GenerateStudyPlanModal: React.FC<GenerateStudyPlanModalProps> = ({
               disabled={isGenerating || isTestDateInPast}
               className="flex-1 px-4 py-3 bg-linear-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 disabled:from-slate-400 disabled:to-slate-500 text-white font-semibold rounded-lg transition-all disabled:cursor-not-allowed"
               title={
-                isTestDateInPast
-                  ? "Cannot generate plan for past test date"
-                  : ""
+                isTestDateInPast ? "Cannot start garden for past test date" : ""
               }
             >
               {isGenerating ? (
@@ -226,7 +224,7 @@ export const GenerateStudyPlanModal: React.FC<GenerateStudyPlanModalProps> = ({
                   <span>Generating...</span>
                 </div>
               ) : (
-                "Generate Plan"
+                "Plant My Garden 🌱"
               )}
             </button>
           </div>
