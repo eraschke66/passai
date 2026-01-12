@@ -1,11 +1,14 @@
 /**
  * Material Realtime Hook
  * Subscribes to material processing status changes via Supabase Realtime
+ * Automatically invalidates React Query cache to keep UI in sync
  */
 
 import { useEffect, useRef } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase/client";
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import { materialsKeys } from "./useMaterials";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import type { StudyMaterial } from "../types/material.types";
 
@@ -21,6 +24,7 @@ export function useMaterialRealtime(
   onStatusChange?: (update: MaterialStatusUpdate) => void,
 ) {
   const { user } = useAuth();
+  const queryClient = useQueryClient();
 
   // Use ref to store the latest callback without causing re-subscriptions
   const callbackRef = useRef(onStatusChange);
@@ -61,6 +65,16 @@ export function useMaterialRealtime(
               updatedAt: material.updated_at,
             });
           }
+
+          // Invalidate React Query cache to update the materials list UI
+          // This ensures the MaterialCard components re-render with the new status
+          if (
+            material.processing_status === "ready" ||
+            material.processing_status === "failed"
+          ) {
+            console.log("🔄 Invalidating materials cache for UI update");
+            queryClient.invalidateQueries({ queryKey: materialsKeys.all });
+          }
         },
       )
       .subscribe((status) => {
@@ -72,7 +86,7 @@ export function useMaterialRealtime(
       console.log("📡 Cleaning up Realtime subscription");
       supabase.removeChannel(channel);
     };
-  }, [user?.id]);
+  }, [user?.id, queryClient]);
 }
 
 /**
